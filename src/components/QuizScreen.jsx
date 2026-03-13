@@ -5,6 +5,7 @@ import { soundCorrect, soundWrong, soundComplete } from "../utils/sounds";
 const FEEDBACK_DELAY = 2000;
 const LETTERS = ["A", "B", "C", "D"];
 const LETTER_COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#C77DFF"];
+const TIMEOUT_MS = 180_000; // 3 minutes
 
 function formatTime(ms) {
   const s = ms / 1000;
@@ -13,7 +14,7 @@ function formatTime(ms) {
   return `${m}m ${(s % 60).toFixed(1)}s`;
 }
 
-export default function QuizScreen({ questions, onFinish }) {
+export default function QuizScreen({ questions, onFinish, onTimeout }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -23,11 +24,13 @@ export default function QuizScreen({ questions, onFinish }) {
   const accumulatedMsRef = useRef(0);
   const questionStartRef = useRef(Date.now());
   const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const question = questions[currentIndex];
   const total = questions.length;
   const progressPct = (currentIndex / total) * 100;
 
+  // Elapsed-time display ticker
   useEffect(() => {
     questionStartRef.current = Date.now();
     intervalRef.current = setInterval(() => {
@@ -35,6 +38,12 @@ export default function QuizScreen({ questions, onFinish }) {
     }, 100);
     return () => clearInterval(intervalRef.current);
   }, [currentIndex]);
+
+  // 3-minute global timeout — set once on mount, cleared on unmount
+  useEffect(() => {
+    timeoutRef.current = setTimeout(onTimeout, TIMEOUT_MS);
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
 
   function handleAnswer(optionIndex) {
     if (locked) return;
@@ -55,6 +64,7 @@ export default function QuizScreen({ questions, onFinish }) {
         setScore(newScore);
         setCurrentIndex((i) => i + 1);
       } else {
+        clearTimeout(timeoutRef.current);
         onFinish(newScore, accumulatedMsRef.current);
       }
     }, FEEDBACK_DELAY);

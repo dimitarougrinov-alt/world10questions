@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ripple } from "../utils/ripple";
-import { getLevelInfo, isChallengerUnlocked, isMasterUnlocked, CHALLENGER_UNLOCK_LEVEL, MASTER_UNLOCK_LEVEL, getEarnedBadges, BADGE_DEFS } from "../utils/xp";
+import { getLevelInfo, isChallengerUnlockedForCat, isMasterUnlockedForCat, getEarnedBadges, getStreak, BADGE_DEFS } from "../utils/xp";
+import { USERNAME_KEY } from "../utils/player";
 
 
 const SHAPES = [
@@ -40,14 +41,18 @@ const DIFFICULTIES = [
   },
 ];
 
-export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) {
+export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t, lang, onSetLang }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const levelInfo           = getLevelInfo(totalXp);
-  const challengerUnlocked  = isChallengerUnlocked(totalXp);
-  const masterUnlocked      = isMasterUnlocked(totalXp);
+  const levelInfo = getLevelInfo(totalXp);
   const earnedBadges        = getEarnedBadges()
     .map(id => BADGE_DEFS.find(b => b.id === id))
     .filter(Boolean);
+  const streak              = getStreak();
+  const rawName             = localStorage.getItem(USERNAME_KEY);
+  const playerName          = (rawName && rawName !== "__skipped__") ? rawName : null;
+  const xpFillPct           = levelInfo.xpForLevel
+    ? Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))
+    : 100;
 
   function handleCategorySelect(cat) {
     setTimeout(() => setSelectedCategory(cat), 220);
@@ -85,22 +90,35 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) 
           <span className="hero-title-questions">Questions</span>
         </h1>
 
-        {/* Level indicator */}
-        <div className="hero-level-bar">
-          <div className="hero-level-info">
-            <span className="hero-level-badge">Lv {levelInfo.level}</span>
-            {levelInfo.xpForLevel ? (
-              <span className="hero-level-xp">{levelInfo.xpIntoLevel} / {levelInfo.xpForLevel} XP</span>
-            ) : (
-              <span className="hero-level-xp">Max Level ✨</span>
-            )}
+        {/* Language toggle — sliding pill */}
+        <div className="hero-lang-toggle" data-lang={lang}>
+          <div className="hero-lang-glider" />
+          <button className="hero-lang-btn" onClick={() => onSetLang("en")}>EN</button>
+          <button className="hero-lang-btn" onClick={() => onSetLang("bg")}>БГ</button>
+        </div>
+
+        {/* Player identity card */}
+        <div className="hero-identity">
+          <div className="hero-identity-level-ring">
+            <div className="hero-identity-level-inner">{levelInfo.level}</div>
           </div>
-          <div className="hero-level-track">
-            <div
-              className="hero-level-fill"
-              style={{ width: levelInfo.xpForLevel ? `${Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))}%` : "100%" }}
-            />
+          <div className="hero-identity-info">
+            {playerName
+              ? <div className="hero-identity-name">{playerName}</div>
+              : <div className="hero-identity-name hero-identity-anon">Explorer</div>
+            }
+            <div className="hero-identity-xp-row">
+              <div className="hero-identity-xp-track">
+                <div className="hero-identity-xp-fill" style={{ width: `${xpFillPct}%` }} />
+              </div>
+              <span className="hero-identity-xp-label">
+                {levelInfo.xpForLevel ? `${levelInfo.xpIntoLevel}/${levelInfo.xpForLevel} XP` : t.max_level}
+              </span>
+            </div>
           </div>
+          {streak > 1 && (
+            <div className="hero-identity-streak">🔥 {streak}</div>
+          )}
         </div>
 
         {/* Earned badges strip */}
@@ -116,9 +134,7 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) 
 
         {!selectedCategory ? (
           <>
-            <p className="hero-subtitle">
-              Choose your challenge and show the world what you know! 🏆
-            </p>
+            <p className="hero-subtitle">{t.subtitle}</p>
 
             {/* Step 1: Category buttons */}
             <div className="hero-categories">
@@ -128,8 +144,8 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) 
                 disabled={loading}
               >
                 <span className="cat-btn-icon">🗺️</span>
-                <span className="cat-btn-label">World Capitals</span>
-                <span className="cat-btn-sub">Name the capital cities!</span>
+                <span className="cat-btn-label">{t.cat_capitals_label}</span>
+                <span className="cat-btn-sub">{t.cat_capitals_sub}</span>
               </button>
 
               <button
@@ -138,31 +154,57 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) 
                 disabled={loading}
               >
                 <span className="cat-btn-icon">💡</span>
-                <span className="cat-btn-label">Inventions</span>
-                <span className="cat-btn-sub">Who invented what?</span>
+                <span className="cat-btn-label">{t.cat_inventions_label}</span>
+                <span className="cat-btn-sub">{t.cat_inventions_sub}</span>
+              </button>
+
+              <button
+                className="hero-cat-btn cat-history"
+                onClick={(e) => { ripple(e); handleCategorySelect("history"); }}
+                disabled={loading}
+              >
+                <span className="cat-btn-icon">📜</span>
+                <span className="cat-btn-label">{t.cat_history_label}</span>
+                <span className="cat-btn-sub">{t.cat_history_sub}</span>
+              </button>
+
+              <button
+                className="hero-cat-btn cat-people"
+                onClick={(e) => { ripple(e); handleCategorySelect("people"); }}
+                disabled={loading}
+              >
+                <span className="cat-btn-icon">🌟</span>
+                <span className="cat-btn-label">{t.cat_people_label}</span>
+                <span className="cat-btn-sub">{t.cat_people_sub}</span>
               </button>
             </div>
 
             {/* Hall of fame */}
             <button className="hero-hof-btn" onClick={(e) => { ripple(e); onStats(); }}>
-              🏆 Hall of Fame
+              {t.hof_btn}
             </button>
           </>
         ) : (
           <>
             <p className="hero-subtitle">
-              {selectedCategory === "capitals" ? "🗺️ World Capitals" : "💡 Inventions"} — Pick your level!
+              {t.pick_level(
+              selectedCategory === "capitals"   ? `🗺️ ${t.cat_capitals_label}`  :
+              selectedCategory === "inventions" ? `💡 ${t.cat_inventions_label}` :
+              selectedCategory === "history"    ? `📜 ${t.cat_history_label}`    :
+                                                  `🌟 ${t.cat_people_label}`
+            )}
             </p>
 
             {/* Step 2: Difficulty buttons */}
             <div className="hero-difficulties">
               {DIFFICULTIES.map((d) => {
                 const locked =
-                  (d.key === "challenger" && !challengerUnlocked) ||
-                  (d.key === "master"     && !masterUnlocked);
-                const unlockLevel =
-                  d.key === "challenger" ? CHALLENGER_UNLOCK_LEVEL :
-                  d.key === "master"     ? MASTER_UNLOCK_LEVEL : null;
+                  (d.key === "challenger" && !isChallengerUnlockedForCat(selectedCategory)) ||
+                  (d.key === "master"     && !isMasterUnlockedForCat(selectedCategory));
+                const desc = d.key === "explorer" ? t.diff_explorer_desc
+                  : d.key === "challenger" ? t.diff_challenger_desc
+                  : t.diff_master_desc;
+                const lockMsg = d.key === "challenger" ? t.diff_need_explorer : t.diff_need_challenger;
                 return (
                   <button
                     key={d.key}
@@ -175,17 +217,17 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) 
                     <span className="diff-btn-icon">{d.icon}</span>
                     <span className="diff-btn-label">{d.label}</span>
                     <span className="diff-btn-desc">
-                      {locked ? `Reach Level ${unlockLevel} to unlock` : d.desc}
+                      {locked ? lockMsg : desc}
                     </span>
                   </button>
                 );
               })}
             </div>
 
-            {loading && <p className="hero-loading">⏳ Loading your quiz…</p>}
+            {loading && <p className="hero-loading">{t.loading}</p>}
 
             <button className="hero-back-btn" onClick={(e) => { ripple(e); handleBack(); }}>
-              ← Back
+              {t.back_btn}
             </button>
           </>
         )}

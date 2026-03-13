@@ -1,19 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ripple } from "../utils/ripple";
 import { USERNAME_KEY } from "../utils/player";
 import { getLevelInfo, BADGE_DEFS } from "../utils/xp";
-
-const MESSAGES = [
-  { min: 10, emoji: "🏆", text: "Legendary!", sub: "You got every single one!" },
-  { min: 8,  emoji: "🌟", text: "Superstar!",  sub: "Nearly perfect — amazing!" },
-  { min: 6,  emoji: "🚀", text: "Great Job!",  sub: "You're on your way up!" },
-  { min: 4,  emoji: "📚", text: "Keep Going!", sub: "Practice makes perfect!" },
-  { min: 0,  emoji: "💪", text: "Try Again!",  sub: "You've got this next time!" },
-];
-
-function getMessage(score) {
-  return MESSAGES.find((m) => score >= m.min);
-}
+import UnlockPopup from "./UnlockPopup";
+import BadgePopup from "./BadgePopup";
 
 function formatTime(ms) {
   if (!ms) return null;
@@ -23,28 +13,48 @@ function formatTime(ms) {
   return `${m}m ${(s % 60).toFixed(1)}s`;
 }
 
-function getSpeedMessage(percentile) {
-  if (percentile === null) return null;
-  if (percentile >= 90) return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "⚡" };
-  if (percentile >= 50) return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "🚀" };
-  if (percentile > 0)   return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "👍" };
-  return { text: "Try to beat your time next round!", emoji: "⏳" };
-}
+export default function ResultScreen({ score, total, totalTime, timePercentile, category, difficulty, challengeData, rewards, unlockedDifficulty, onPlayAgain, onHome, onStats, t }) {
+  const [shareState, setShareState] = useState("idle");
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [showBadges, setShowBadges] = useState(false);
 
-export default function ResultScreen({ score, total, totalTime, timePercentile, category, difficulty, challengeData, rewards, onPlayAgain, onStats }) {
-  const [shareState, setShareState] = useState("idle"); // idle | copied | shared
+  useEffect(() => {
+    const hasBadges = newBadgeDefs.length > 0;
+    const hasUnlock = !!unlockedDifficulty;
+    if (!hasUnlock && !hasBadges) return;
+    const timer = setTimeout(() => {
+      if (hasUnlock) setShowUnlock(true);
+      else           setShowBadges(true);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function handleUnlockClose() {
+    setShowUnlock(false);
+    if (newBadgeDefs.length > 0) setTimeout(() => setShowBadges(true), 500);
+  }
   const percentage = Math.round((score / total) * 100);
-  const { emoji, text, sub } = getMessage(score);
+  const { emoji, text, sub } = t.results.find((m) => score >= m.min);
   const timeStr = formatTime(totalTime);
-  const speedMsg = getSpeedMessage(timePercentile);
 
-  // XP / level rewards
+  const speedMsg = (() => {
+    if (timePercentile === null) return null;
+    if (timePercentile > 0) return { text: t.faster_than(timePercentile), emoji: timePercentile >= 90 ? "⚡" : timePercentile >= 50 ? "🚀" : "👍" };
+    return { text: t.beat_time, emoji: "⏳" };
+  })();
+
   const levelInfo = rewards ? getLevelInfo(rewards.totalXp) : null;
   const newBadgeDefs = rewards?.newBadges?.map(id => BADGE_DEFS.find(b => b.id === id)).filter(Boolean) ?? [];
 
-  // Challenge comparison
-  const challengeWon = challengeData ? score > challengeData.score : null;
+  const challengeWon  = challengeData ? score > challengeData.score : null;
   const challengeTied = challengeData ? score === challengeData.score : null;
+
+  // Ambient glow colour based on performance
+  const glowColor = percentage >= 80
+    ? "rgba(255, 200, 50, 0.18)"
+    : percentage >= 50
+      ? "rgba(78, 205, 196, 0.13)"
+      : "rgba(100, 120, 220, 0.12)";
 
   async function handleShare() {
     const rawName = localStorage.getItem(USERNAME_KEY);
@@ -59,13 +69,27 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
         setShareState("copied");
       }
     } catch {
-      // user cancelled share — do nothing
+      // user cancelled
     }
     setTimeout(() => setShareState("idle"), 2500);
   }
 
   return (
     <div className="res-screen">
+      {showUnlock && (
+        <UnlockPopup difficulty={unlockedDifficulty} onClose={handleUnlockClose} />
+      )}
+      {showBadges && newBadgeDefs.length > 0 && (
+        <BadgePopup badges={newBadgeDefs} onClose={() => setShowBadges(false)} />
+      )}
+      {/* Ambient score glow */}
+      <div
+        className="res-ambient"
+        aria-hidden="true"
+        style={{ background: `radial-gradient(ellipse at 50% 25%, ${glowColor}, transparent 68%)` }}
+      />
+
+      {/* Falling sparks */}
       <div className="res-sparks" aria-hidden="true">
         {["⭐","✨","💫","🌟","⭐","✨","💫","🌟","⭐","✨","💫","🌟"].map((s, i) => (
           <span key={i} className="res-spark" style={{
@@ -78,78 +102,96 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
       </div>
 
       <div className="res-card">
-        <div className="res-emoji">{emoji}</div>
-        <h2 className="res-title">{text}</h2>
-        <p className="res-sub">{sub}</p>
 
-        {/* Challenge result banner */}
+        {/* ── 1. Header ── */}
+        <div className="res-header res-reveal">
+          <div className="res-emoji">{emoji}</div>
+          <h2 className="res-title">{text}</h2>
+          <p className="res-sub">{sub}</p>
+        </div>
+
+        {/* ── 2. Challenge banner ── */}
         {challengeData && (
-          <div className={`res-challenge-banner ${challengeWon ? "res-ch-won" : challengeTied ? "res-ch-tied" : "res-ch-lost"}`}>
-            {challengeWon  && `🏆 You beat ${challengeData.name}! (${challengeData.score}/${challengeData.total})`}
-            {challengeTied && `🤝 Tied with ${challengeData.name}! (${challengeData.score}/${challengeData.total})`}
-            {!challengeWon && !challengeTied && `😅 ${challengeData.name} wins this round (${challengeData.score}/${challengeData.total})`}
+          <div className={`res-challenge-banner res-reveal res-reveal-d1 ${challengeWon ? "res-ch-won" : challengeTied ? "res-ch-tied" : "res-ch-lost"}`}>
+            {challengeWon  && t.ch_won(challengeData.name, challengeData.score, challengeData.total)}
+            {challengeTied && t.ch_tied(challengeData.name, challengeData.score, challengeData.total)}
+            {!challengeWon && !challengeTied && t.ch_lost(challengeData.name, challengeData.score, challengeData.total)}
           </div>
         )}
 
-        <div className="res-score-wrap">
-          <span className="res-score-big">{score}</span>
-          <span className="res-score-sep">/</span>
-          <span className="res-score-total">{total}</span>
-        </div>
-
-        <div className="res-pct-bar-wrap">
-          <div className="res-pct-bar">
-            <div className="res-pct-fill" style={{ width: `${percentage}%` }} />
+        {/* ── 3. Score hero ── */}
+        <div className="res-score-hero res-reveal res-reveal-d1">
+          <div className="res-score-wrap">
+            <span className="res-score-big">{score}</span>
+            <span className="res-score-sep">/</span>
+            <span className="res-score-total">{total}</span>
           </div>
-          <span className="res-pct-label">{percentage}%</span>
+          <div className="res-pct-bar-wrap">
+            <div className="res-pct-bar">
+              <div className="res-pct-fill" style={{ "--pct": `${percentage}%` }} />
+            </div>
+            <span className="res-pct-label">{percentage}%</span>
+          </div>
         </div>
 
+        {/* ── 4. Stats ── */}
         {(timeStr || speedMsg) && (
-          <div className="res-stats-row">
+          <div className="res-stats-row res-reveal res-reveal-d2">
             {timeStr && (
-              <div className="res-stat-pill">
-                <span className="res-stat-pill-icon">⏱</span>
-                <span className="res-stat-pill-val">{timeStr}</span>
+              <div className="res-stat-card">
+                <span className="res-stat-card-icon">⏱</span>
+                <div className="res-stat-card-body">
+                  <span className="res-stat-card-val">{timeStr}</span>
+                  <span className="res-stat-card-lbl">Time</span>
+                </div>
               </div>
             )}
             {speedMsg && (
-              <div className="res-stat-pill res-stat-pill-speed">
-                <span className="res-stat-pill-icon">{speedMsg.emoji}</span>
-                <span className="res-stat-pill-val">{speedMsg.text}</span>
+              <div className="res-stat-card res-stat-card-speed">
+                <span className="res-stat-card-icon">{speedMsg.emoji}</span>
+                <div className="res-stat-card-body">
+                  <span className="res-stat-card-val res-stat-card-val-sm">{speedMsg.text}</span>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* XP / Level panel */}
+        {/* ── 5. XP / Level panel ── */}
         {rewards && (
-          <div className="res-xp-panel">
-            <div className="res-xp-earned">+{rewards.xpEarned} XP</div>
+          <div className={`res-xp-panel res-reveal res-reveal-d3${rewards.leveledUp ? " res-xp-levelup" : ""}`}>
+            <div className="res-xp-top">
+              <span className="res-xp-earned">{t.xp_earned(rewards.xpEarned)}</span>
+              {rewards.streak > 1 && (
+                <span className="res-streak">{t.streak_msg(rewards.streak)}</span>
+              )}
+            </div>
+
             {rewards.leveledUp && (
-              <div className="res-levelup">⬆️ Level Up! You're now Level {rewards.newLevel}</div>
+              <div className="res-levelup">
+                <span className="res-levelup-shine" aria-hidden="true" />
+                <span className="res-levelup-text">{t.level_up(rewards.newLevel)}</span>
+              </div>
             )}
+
             <div className="res-xp-bar-row">
               <span className="res-xp-level-label">Lv {levelInfo.level}</span>
               <div className="res-xp-track">
                 <div
                   className="res-xp-fill"
-                  style={{ width: levelInfo.xpForLevel
+                  style={{ "--xp-pct": levelInfo.xpForLevel
                     ? `${Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))}%`
                     : "100%" }}
                 />
               </div>
               <span className="res-xp-sub-label">
-                {levelInfo.xpForLevel
-                  ? `${levelInfo.xpIntoLevel}/${levelInfo.xpForLevel}`
-                  : "MAX"}
+                {levelInfo.xpForLevel ? `${levelInfo.xpIntoLevel}/${levelInfo.xpForLevel}` : "MAX"}
               </span>
             </div>
-            {rewards.streak > 1 && (
-              <div className="res-streak">🔥 {rewards.streak}-day streak!</div>
-            )}
+
             {newBadgeDefs.length > 0 && (
               <div className="res-new-badges">
-                <span className="res-badges-label">New badges:</span>
+                <span className="res-badges-label">{t.new_badges}</span>
                 {newBadgeDefs.map(b => (
                   <span key={b.id} className="res-badge-pill" title={b.desc}>
                     {b.emoji} {b.name}
@@ -160,19 +202,26 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
           </div>
         )}
 
-        <div className="res-actions">
+        {/* ── 6. Actions ── */}
+        <div className="res-actions res-reveal res-reveal-d4">
           <button className="res-btn-primary" onClick={(e) => { ripple(e); onPlayAgain(); }}>
-            Play Again
+            {t.play_again}
           </button>
-          <button className="res-btn-ghost" onClick={(e) => { ripple(e); onStats(); }}>
-            🏆 Hall of Fame
-          </button>
+          <div className="res-btn-row">
+            <button className="res-btn-ghost" onClick={(e) => { ripple(e); onHome(); }}>
+              {t.home_btn}
+            </button>
+            <button className="res-btn-ghost" onClick={(e) => { ripple(e); onStats(); }}>
+              {t.hof_result}
+            </button>
+          </div>
           {category && difficulty && (
             <button className="res-btn-share" onClick={(e) => { ripple(e); handleShare(); }}>
-              {shareState === "copied" ? "✓ Link Copied!" : shareState === "shared" ? "✓ Shared!" : "⚔️ Challenge a Friend"}
+              {shareState === "copied" ? t.link_copied : shareState === "shared" ? t.shared_ok : t.challenge_btn}
             </button>
           )}
         </div>
+
       </div>
     </div>
   );

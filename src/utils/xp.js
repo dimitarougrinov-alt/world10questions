@@ -18,10 +18,13 @@ export const MASTER_UNLOCK_LEVEL     = 5;
 const DIFF_MULTIPLIERS = { explorer: 1, challenger: 1.5, master: 2 };
 
 // ─── localStorage keys ───────────────────────────────────────────────────────
-const XP_KEY      = "wq_xp";
-const STREAK_KEY  = "wq_streak";
-const DATE_KEY    = "wq_streak_date";
-const BADGES_KEY  = "wq_badges";
+const XP_KEY          = "wq_xp";
+const STREAK_KEY      = "wq_streak";
+const DATE_KEY        = "wq_streak_date";
+const BADGES_KEY      = "wq_badges";
+const CAT_PROGRESS_KEY = "wq_cat_progress";
+
+const LEGACY_CATS = ["capitals", "inventions"];
 
 // ─── XP helpers ──────────────────────────────────────────────────────────────
 export function getTotalXp() {
@@ -59,6 +62,51 @@ export function isChallengerUnlocked(xp) {
 
 export function isMasterUnlocked(xp) {
   return getLevelInfo(xp).level >= MASTER_UNLOCK_LEVEL;
+}
+
+// ─── Per-category progress ────────────────────────────────────────────────────
+// Stores best percentage achieved per difficulty per category.
+// { [category]: { explorer: bestPct, challenger: bestPct, master: bestPct } }
+// On first access, migrates legacy players: if they already unlocked via
+// global level, seed their legacy categories with the 80 threshold so they
+// don't lose access.
+
+const UNLOCK_PCT = 80;
+
+export function getCategoryProgress() {
+  const raw = localStorage.getItem(CAT_PROGRESS_KEY);
+  if (raw) {
+    try { return JSON.parse(raw); } catch { return {}; }
+  }
+  // First-time migration from global level
+  const level = getLevelInfo(getTotalXp()).level;
+  const progress = {};
+  if (level >= CHALLENGER_UNLOCK_LEVEL) {
+    for (const cat of LEGACY_CATS) progress[cat] = { explorer: UNLOCK_PCT };
+  }
+  if (level >= MASTER_UNLOCK_LEVEL) {
+    for (const cat of LEGACY_CATS) progress[cat] = { explorer: UNLOCK_PCT, challenger: UNLOCK_PCT };
+  }
+  localStorage.setItem(CAT_PROGRESS_KEY, JSON.stringify(progress));
+  return progress;
+}
+
+export function recordCategoryResult(category, difficulty, percentage) {
+  const progress = getCategoryProgress();
+  if (!progress[category]) progress[category] = {};
+  const prev = progress[category][difficulty] || 0;
+  if (percentage > prev) {
+    progress[category][difficulty] = percentage;
+    localStorage.setItem(CAT_PROGRESS_KEY, JSON.stringify(progress));
+  }
+}
+
+export function isChallengerUnlockedForCat(category) {
+  return (getCategoryProgress()[category]?.explorer || 0) >= UNLOCK_PCT;
+}
+
+export function isMasterUnlockedForCat(category) {
+  return (getCategoryProgress()[category]?.challenger || 0) >= UNLOCK_PCT;
 }
 
 // ─── Streak helpers ───────────────────────────────────────────────────────────

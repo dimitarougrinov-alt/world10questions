@@ -1,9 +1,8 @@
 import { ripple } from "../utils/ripple";
 
-const CAT_LABELS = { capitals: "World Capitals", inventions: "Inventions" };
 const DIFF_LABELS = { explorer: "🌱 Explorer", challenger: "⚔️ Challenger", master: "🔥 Master" };
 
-export default function ChallengeScreen({ challenger, onAccept, onDecline }) {
+export default function ChallengeScreen({ challenger, onAccept, onDecline, t }) {
   // challenger = { name, score, total, category, difficulty }
   const { name, score, total, category, difficulty } = challenger;
   const pct = Math.round((score / total) * 100);
@@ -12,22 +11,22 @@ export default function ChallengeScreen({ challenger, onAccept, onDecline }) {
     <div className="ch-screen">
       <div className="ch-card">
         <div className="ch-badge">⚔️</div>
-        <h2 className="ch-title">You've been challenged!</h2>
+        <h2 className="ch-title">{t.ch_title}</h2>
         <p className="ch-challenger">{name}</p>
         <p className="ch-detail">scored <strong>{score}/{total}</strong> ({pct}%) on</p>
         <div className="ch-quiz-info">
-          <span className="ch-cat">{CAT_LABELS[category] || category}</span>
+          <span className="ch-cat">{t.ch_cat_label(category)}</span>
           <span className="ch-diff">{DIFF_LABELS[difficulty] || difficulty}</span>
         </div>
-        <p className="ch-taunt">Can you beat them? 🚀</p>
+        <p className="ch-taunt">{t.ch_taunt(name, score, total)}</p>
         <button
           className="ch-accept-btn"
           onClick={(e) => { ripple(e); onAccept(category, difficulty); }}
         >
-          Accept Challenge!
+          {t.ch_accept}
         </button>
         <button className="ch-decline" onClick={onDecline}>
-          Play something else
+          {t.ch_decline}
         </button>
       </div>
     </div>

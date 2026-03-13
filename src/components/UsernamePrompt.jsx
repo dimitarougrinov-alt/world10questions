@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ripple } from "../utils/ripple";
 
-export default function UsernamePrompt({ onSave, onSkip }) {
+export default function UsernamePrompt({ onSave, onSkip, t }) {
   const [value, setValue] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -16,12 +16,12 @@ export default function UsernamePrompt({ onSave, onSkip }) {
     <div className="up-overlay">
       <div className="up-card">
         <div className="up-icon">✨</div>
-        <h2 className="up-title">What's your name?</h2>
-        <p className="up-sub">Show up on the leaderboard with a name you choose.</p>
+        <h2 className="up-title">{t.up_title}</h2>
+        <p className="up-sub">{t.up_sub}</p>
         <input
           className="up-input"
           type="text"
-          placeholder="Enter your name…"
+          placeholder={t.up_ph}
           maxLength={20}
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -33,10 +33,10 @@ export default function UsernamePrompt({ onSave, onSkip }) {
           disabled={!value.trim() || saving}
           onClick={(e) => { ripple(e); handleSave(e); }}
         >
-          {saving ? "Saving…" : "Save my name"}
+          {saving ? t.up_saving : t.up_save}
         </button>
         <button className="up-skip" onClick={onSkip}>
-          Maybe later
+          {t.up_skip}
         </button>
       </div>
     </div>

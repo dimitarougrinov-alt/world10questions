@@ -25,7 +25,10 @@ export async function addFriendByCode(myPlayerId, rawCode) {
   if (!codeSnap.exists()) throw new Error("Code not found. Check it and try again.");
   const friendId = codeSnap.data().playerId;
   if (friendId === myPlayerId) throw new Error("That's your own code!");
-  await setDoc(doc(db, "players", myPlayerId), { friends: arrayUnion(friendId) }, { merge: true });
+  await Promise.all([
+    setDoc(doc(db, "players", myPlayerId), { friends: arrayUnion(friendId) }, { merge: true }),
+    setDoc(doc(db, "players", friendId),   { friends: arrayUnion(myPlayerId) }, { merge: true }),
+  ]);
   return friendId;
 }
 
