@@ -1,0 +1,300 @@
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg:        #f0f7ff;
+  --color-primary:   #4f9cf9;
+  --color-primary-d: #2f7de0;
+  --color-accent:    #ffcb47;
+  --color-accent-d:  #f5b800;
+  --color-correct:   #22c55e;
+  --color-wrong:     #ef4444;
+  --color-card:      #ffffff;
+  --color-text:      #1e293b;
+  --color-muted:     #64748b;
+  --radius:          1.2rem;
+  --shadow:          0 8px 32px rgba(79, 156, 249, 0.15);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: "Nunito", "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #cfe8ff 0%, #e8f5ff 50%, #fff3cd 100%);
+  min-height: 100vh;
+  color: var(--color-text);
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.screen {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.start-card,
+.quiz-card,
+.result-card {
+  background: var(--color-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 560px;
+  text-align: center;
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.9) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+/* ============================================================
+   START SCREEN
+   ============================================================ */
+.globe-icon {
+  font-size: 5rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  animation: spin-slow 8s linear infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 800;
+  border-radius: 999px;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
+  user-select: none;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+/* Primary button (Start / Play Again) */
+.btn-primary {
+  background: var(--color-accent);
+  color: #1e293b;
+  font-size: 1.25rem;
+  padding: 0.85rem 2.8rem;
+  box-shadow: 0 4px 0 var(--color-accent-d);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #ffd966;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--color-accent-d);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 var(--color-accent-d);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Option buttons */
+.btn-option {
+  width: 100%;
+  background: #eef5ff;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: var(--radius);
+  border: 2px solid #c8dffd;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.btn-option:hover:not(:disabled):not(.correct):not(.wrong):not(.dimmed) {
+  background: #d4e9ff;
+  border-color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+.btn-option.correct {
+  background: #dcfce7;
+  border-color: var(--color-correct);
+  color: #15803d;
+}
+
+.btn-option.wrong {
+  background: #fee2e2;
+  border-color: var(--color-wrong);
+  color: #b91c1c;
+}
+
+.btn-option.dimmed {
+  opacity: 0.45;
+}
+
+.btn-option:disabled {
+  cursor: default;
+}
+
+/* ============================================================
+   QUIZ SCREEN
+   ============================================================ */
+.progress-bar-track {
+  height: 10px;
+  background: #e2eeff;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), #7ec8ff);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+
+.question-text {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.4;
+  margin-bottom: 1.75rem;
+  color: var(--color-text);
+}
+
+.country-name {
+  color: var(--color-primary);
+}
+
+.options-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+.result-emoji {
+  font-size: 5rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.result-message {
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
+.score-display {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.score-big   { color: var(--color-primary); }
+.score-divider { color: var(--color-muted); font-size: 2.5rem; }
+.score-total  { color: var(--color-muted); }
+
+.score-percent {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-bottom: 2rem;
+}
+
+/* ============================================================
+   ERROR BANNER
+   ============================================================ */
+.error-banner {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .start-card,
+  .quiz-card,
+  .result-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .title { font-size: 1.8rem; }
+  .question-text { font-size: 1.2rem; }
+  .score-display { font-size: 3rem; }
+  .result-message { font-size: 1.4rem; }
+}

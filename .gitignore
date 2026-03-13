@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.*
+*.local
+
+# Firebase
+.firebase/
+*-firebase-adminsdk-*.json
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Cache
+*.cache
+.eslintcache
+.parcel-cache/
+.vite/

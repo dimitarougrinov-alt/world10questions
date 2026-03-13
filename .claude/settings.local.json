@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:/Projects/VSCode/world10questions/world10questions\" && npm run dev)",
+      "Bash(taskkill /F /IM node.exe 2>/dev/null; echo \"Done\")"
+    ]
+  }
+}
