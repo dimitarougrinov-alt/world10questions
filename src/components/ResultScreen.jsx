@@ -1,3 +1,7 @@
+import { useState } from "react";
+import { ripple } from "../utils/ripple";
+import { USERNAME_KEY } from "../utils/player";
+
 const MESSAGES = [
   { min: 10, emoji: "🏆", text: "Legendary!", sub: "You got every single one!" },
   { min: 8,  emoji: "🌟", text: "Superstar!",  sub: "Nearly perfect — amazing!" },
@@ -26,18 +30,37 @@ function getSpeedMessage(percentile) {
   return { text: "Try to beat your time next round!", emoji: "⏳" };
 }
 
-import { ripple } from "../utils/ripple";
-
-export default function ResultScreen({ score, total, totalTime, timePercentile, onPlayAgain, onStats }) {
+export default function ResultScreen({ score, total, totalTime, timePercentile, category, difficulty, challengeData, onPlayAgain, onStats }) {
+  const [shareState, setShareState] = useState("idle"); // idle | copied | shared
   const percentage = Math.round((score / total) * 100);
   const { emoji, text, sub } = getMessage(score);
   const timeStr = formatTime(totalTime);
   const speedMsg = getSpeedMessage(timePercentile);
 
+  // Challenge comparison
+  const challengeWon = challengeData ? score > challengeData.score : null;
+  const challengeTied = challengeData ? score === challengeData.score : null;
+
+  async function handleShare() {
+    const rawName = localStorage.getItem(USERNAME_KEY);
+    const name = (rawName && rawName !== "__skipped__") ? rawName : "A friend";
+    const url = `${window.location.origin}${window.location.pathname}?challenge=1&score=${score}&total=${total}&cat=${encodeURIComponent(category || "")}&diff=${encodeURIComponent(difficulty || "")}&name=${encodeURIComponent(name)}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "World 10 Questions — Challenge!", text: `${name} scored ${score}/${total}. Can you beat them?`, url });
+        setShareState("shared");
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareState("copied");
+      }
+    } catch {
+      // user cancelled share — do nothing
+    }
+    setTimeout(() => setShareState("idle"), 2500);
+  }
+
   return (
     <div className="res-screen">
-
-      {/* Celebration sparks */}
       <div className="res-sparks" aria-hidden="true">
         {["⭐","✨","💫","🌟","⭐","✨","💫","🌟","⭐","✨","💫","🌟"].map((s, i) => (
           <span key={i} className="res-spark" style={{
@@ -53,6 +76,15 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
         <div className="res-emoji">{emoji}</div>
         <h2 className="res-title">{text}</h2>
         <p className="res-sub">{sub}</p>
+
+        {/* Challenge result banner */}
+        {challengeData && (
+          <div className={`res-challenge-banner ${challengeWon ? "res-ch-won" : challengeTied ? "res-ch-tied" : "res-ch-lost"}`}>
+            {challengeWon  && `🏆 You beat ${challengeData.name}! (${challengeData.score}/${challengeData.total})`}
+            {challengeTied && `🤝 Tied with ${challengeData.name}! (${challengeData.score}/${challengeData.total})`}
+            {!challengeWon && !challengeTied && `😅 ${challengeData.name} wins this round (${challengeData.score}/${challengeData.total})`}
+          </div>
+        )}
 
         <div className="res-score-wrap">
           <span className="res-score-big">{score}</span>
@@ -91,6 +123,11 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
           <button className="res-btn-ghost" onClick={(e) => { ripple(e); onStats(); }}>
             🏆 Hall of Fame
           </button>
+          {category && difficulty && (
+            <button className="res-btn-share" onClick={(e) => { ripple(e); handleShare(); }}>
+              {shareState === "copied" ? "✓ Link Copied!" : shareState === "shared" ? "✓ Shared!" : "⚔️ Challenge a Friend"}
+            </button>
+          )}
         </div>
       </div>
     </div>

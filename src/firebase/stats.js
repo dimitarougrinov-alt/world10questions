@@ -99,6 +99,7 @@ export async function getLeaderboard(category = null, difficulty = null) {
     .map((p) => ({
       id: p.id,
       country: p.country,
+      username: p.username ?? null,
       gamesPlayed:    key ? (p[key]?.gamesPlayed    ?? 0)    : p.gamesPlayed,
       bestPercentage: key ? (p[key]?.bestPercentage ?? 0)    : p.bestPercentage,
       avgPercentage:  key ? (p[key]?.avgPercentage  ?? 0)    : p.avgPercentage,
@@ -113,6 +114,62 @@ export async function getLeaderboard(category = null, difficulty = null) {
     .slice(0, 10);
 
   return players;
+}
+
+export async function saveUsername(playerId, username) {
+  await setDoc(doc(db, "players", playerId), { username }, { merge: true });
+}
+
+function mergeStatBlock(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  const combined = {
+    gamesPlayed:    a.gamesPlayed    + b.gamesPlayed,
+    totalCorrect:   a.totalCorrect   + b.totalCorrect,
+    totalQuestions: a.totalQuestions + b.totalQuestions,
+    bestPercentage: Math.max(a.bestPercentage, b.bestPercentage),
+  };
+  combined.avgPercentage = Math.round((combined.totalCorrect / combined.totalQuestions) * 100);
+  if (a.bestPercentage > b.bestPercentage)       combined.bestTime = a.bestTime;
+  else if (b.bestPercentage > a.bestPercentage)  combined.bestTime = b.bestTime;
+  else {
+    if (a.bestTime === null)      combined.bestTime = b.bestTime;
+    else if (b.bestTime === null) combined.bestTime = a.bestTime;
+    else combined.bestTime = Math.min(a.bestTime, b.bestTime);
+  }
+  return combined;
+}
+
+export async function migratePlayer(fromId, toId) {
+  if (!fromId || fromId === toId) return;
+  const fromSnap = await getDoc(doc(db, "players", fromId));
+  if (!fromSnap.exists()) return;
+
+  const from = fromSnap.data();
+  const toRef = doc(db, "players", toId);
+  const toSnap = await getDoc(toRef);
+  const to = toSnap.exists() ? toSnap.data() : null;
+
+  // Merge all stat keys (global + per-category-difficulty)
+  const statKeys = ["gamesPlayed", "totalCorrect", "totalQuestions", "bestPercentage", "bestTime", "avgPercentage"];
+  const blockKeys = Object.keys(from).filter(k => !statKeys.includes(k) && typeof from[k] === "object" && from[k] !== null && "gamesPlayed" in from[k]);
+
+  const merged = {
+    ...mergeStatBlock(
+      to ? { gamesPlayed: to.gamesPlayed, totalCorrect: to.totalCorrect, totalQuestions: to.totalQuestions, bestPercentage: to.bestPercentage, bestTime: to.bestTime } : null,
+      { gamesPlayed: from.gamesPlayed, totalCorrect: from.totalCorrect, totalQuestions: from.totalQuestions, bestPercentage: from.bestPercentage, bestTime: from.bestTime }
+    ),
+    country:    to?.country    ?? from.country    ?? null,
+    username:   to?.username   ?? from.username   ?? null,
+    lastPlayed: to?.lastPlayed ?? from.lastPlayed ?? null,
+    migratedFrom: fromId,
+  };
+
+  for (const key of blockKeys) {
+    merged[key] = mergeStatBlock(to?.[key] ?? null, from[key]);
+  }
+
+  await setDoc(toRef, merged, { merge: true });
 }
 
 export async function getTimePercentile(percentage, totalTime, category = null, difficulty = null) {

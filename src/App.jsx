@@ -1,17 +1,22 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { generateCapitalsQuiz, generateInventionsQuiz } from "./utils/quizGenerator";
 import countriesData from "./data/countries";
 import inventionsData from "./data/inventions";
-import { getPlayerId, getPlayerCountry } from "./utils/player";
-import { saveSession, getTimePercentile } from "./firebase/stats";
+import { getPlayerId, getPlayerCountry, USERNAME_KEY } from "./utils/player";
+import { saveSession, getTimePercentile, saveUsername, migratePlayer } from "./firebase/stats";
+import { onAuthChange, signInWithGoogle, signOutUser } from "./firebase/auth";
+import { soundTransition } from "./utils/sounds";
 
 import StartScreen from "./components/StartScreen";
 import QuizScreen from "./components/QuizScreen";
 import ResultScreen from "./components/ResultScreen";
 import StatsScreen from "./components/StatsScreen";
+import UsernamePrompt from "./components/UsernamePrompt";
+import ChallengeScreen from "./components/ChallengeScreen";
 
 const SCREEN = {
   START: "start",
+  CHALLENGE: "challenge",
   QUIZ: "quiz",
   RESULT: "result",
   STATS: "stats",
@@ -19,9 +24,12 @@ const SCREEN = {
 
 const TRANSITION_MS = 300;
 
-const playerId = getPlayerId();
-
 export default function App() {
+  const [playerId, setPlayerId] = useState(() => getPlayerId());
+  const [googleUser, setGoogleUser] = useState(null);
+  const [showUsernamePrompt, setShowUsernamePrompt] = useState(false);
+  const [challengeData, setChallengeData] = useState(null);
+
   const [screen, setScreen] = useState(SCREEN.START);
   const [exiting, setExiting] = useState(false);
   const nextScreenRef = useRef(null);
@@ -35,7 +43,38 @@ export default function App() {
   const [category, setCategory] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
 
+  // Detect challenge links on load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("challenge") === "1") {
+      const cd = {
+        name:       decodeURIComponent(params.get("name") || "A friend"),
+        score:      parseInt(params.get("score"), 10),
+        total:      parseInt(params.get("total"), 10),
+        category:   params.get("cat"),
+        difficulty: params.get("diff"),
+      };
+      setChallengeData(cd);
+      setScreen(SCREEN.CHALLENGE);
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
+  // Restore Google session on reload
+  useEffect(() => {
+    return onAuthChange((user) => {
+      if (user) {
+        setGoogleUser(user);
+        setPlayerId(user.uid);
+        localStorage.setItem("wq_player_id", user.uid);
+      } else {
+        setGoogleUser(null);
+      }
+    });
+  }, []);
+
   function goTo(next) {
+    soundTransition();
     nextScreenRef.current = next;
     setExiting(true);
     setTimeout(() => {
@@ -50,12 +89,9 @@ export default function App() {
     setCategory(cat);
     setDifficulty(diff);
     try {
-      let quiz;
-      if (cat === "inventions") {
-        quiz = generateInventionsQuiz(inventionsData, diff);
-      } else {
-        quiz = generateCapitalsQuiz(countriesData, diff);
-      }
+      const quiz = cat === "inventions"
+        ? generateInventionsQuiz(inventionsData, diff)
+        : generateCapitalsQuiz(countriesData, diff);
       setQuestions(quiz);
       goTo(SCREEN.QUIZ);
     } catch (err) {
@@ -65,6 +101,15 @@ export default function App() {
       setLoading(false);
     }
   }, []);
+
+  function handleAcceptChallenge(cat, diff) {
+    startQuiz(cat, diff);
+  }
+
+  function handleDeclineChallenge() {
+    setChallengeData(null);
+    goTo(SCREEN.START);
+  }
 
   async function handleFinish(score, timeMs) {
     setFinalScore(score);
@@ -78,9 +123,49 @@ export default function App() {
       ]);
       setTimePercentile(percentile);
       await saveSession(playerId, score, questions.length, country, timeMs, category, difficulty);
+      if (!localStorage.getItem(USERNAME_KEY)) {
+        setTimeout(() => setShowUsernamePrompt(true), 800);
+      }
     } catch (err) {
       console.error("Failed to save session:", err);
     }
+  }
+
+  async function handleSaveUsername(name) {
+    localStorage.setItem(USERNAME_KEY, name);
+    await saveUsername(playerId, name);
+    setShowUsernamePrompt(false);
+  }
+
+  function handleSkipUsername() {
+    localStorage.setItem(USERNAME_KEY, "__skipped__");
+    setShowUsernamePrompt(false);
+  }
+
+  async function handleGoogleSignIn() {
+    try {
+      const anonymousId = playerId;
+      const user = await signInWithGoogle();
+      if (anonymousId !== user.uid) {
+        await migratePlayer(anonymousId, user.uid);
+      }
+      setGoogleUser(user);
+      setPlayerId(user.uid);
+      localStorage.setItem("wq_player_id", user.uid);
+      const localName = localStorage.getItem(USERNAME_KEY);
+      if (localName && localName !== "__skipped__") {
+        await saveUsername(user.uid, localName);
+      }
+    } catch (err) {
+      console.error("Google sign-in failed:", err);
+    }
+  }
+
+  async function handleGoogleSignOut() {
+    await signOutUser();
+    setGoogleUser(null);
+    const newId = getPlayerId();
+    setPlayerId(newId);
   }
 
   function handlePlayAgain() {
@@ -90,23 +175,23 @@ export default function App() {
     setTimePercentile(null);
     setCategory(null);
     setDifficulty(null);
+    setChallengeData(null);
     goTo(SCREEN.START);
   }
 
   return (
     <div className="app">
-      {error && (
-        <div className="error-banner" role="alert">
-          {error}
-        </div>
-      )}
+      {error && <div className="error-banner" role="alert">{error}</div>}
 
       <div className={exiting ? "page-exit" : "page-enter"}>
         {screen === SCREEN.START && (
-          <StartScreen
-            onStart={startQuiz}
-            onStats={() => goTo(SCREEN.STATS)}
-            loading={loading}
+          <StartScreen onStart={startQuiz} onStats={() => goTo(SCREEN.STATS)} loading={loading} />
+        )}
+        {screen === SCREEN.CHALLENGE && challengeData && (
+          <ChallengeScreen
+            challenger={challengeData}
+            onAccept={handleAcceptChallenge}
+            onDecline={handleDeclineChallenge}
           />
         )}
         {screen === SCREEN.QUIZ && (
@@ -118,6 +203,9 @@ export default function App() {
             total={questions.length}
             totalTime={totalTime}
             timePercentile={timePercentile}
+            category={category}
+            difficulty={difficulty}
+            challengeData={challengeData}
             onPlayAgain={handlePlayAgain}
             onStats={() => goTo(SCREEN.STATS)}
           />
@@ -125,10 +213,17 @@ export default function App() {
         {screen === SCREEN.STATS && (
           <StatsScreen
             playerId={playerId}
+            googleUser={googleUser}
+            onGoogleSignIn={handleGoogleSignIn}
+            onGoogleSignOut={handleGoogleSignOut}
             onBack={() => goTo(SCREEN.START)}
           />
         )}
       </div>
+
+      {showUsernamePrompt && (
+        <UsernamePrompt onSave={handleSaveUsername} onSkip={handleSkipUsername} />
+      )}
     </div>
   );
 }

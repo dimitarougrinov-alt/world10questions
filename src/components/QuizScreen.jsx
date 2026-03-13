@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { ripple } from "../utils/ripple";
+import { soundCorrect, soundWrong, soundComplete } from "../utils/sounds";
 
 const FEEDBACK_DELAY = 2000;
 const LETTERS = ["A", "B", "C", "D"];
@@ -44,6 +45,9 @@ export default function QuizScreen({ questions, onFinish }) {
     setSelected(optionIndex);
     const isCorrect = optionIndex === question.correctIndex;
     const newScore = isCorrect ? score + 1 : score;
+    if (isCorrect) soundCorrect(); else soundWrong();
+    const isLast = currentIndex + 1 >= total;
+    if (isLast) setTimeout(soundComplete, 300);
     setTimeout(() => {
       if (currentIndex + 1 < total) {
         setSelected(null);

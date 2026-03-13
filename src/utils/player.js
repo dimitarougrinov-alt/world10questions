@@ -1,5 +1,6 @@
-const ID_KEY = "wq_player_id";
+const ID_KEY      = "wq_player_id";
 const COUNTRY_KEY = "wq_player_country";
+export const USERNAME_KEY = "wq_username";
 
 export function getPlayerId() {
   let id = localStorage.getItem(ID_KEY);

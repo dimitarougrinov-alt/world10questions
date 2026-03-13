@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ripple } from "../utils/ripple";
 
+
 const SHAPES = [
   { emoji: "⭐", style: { top: "8%",  left: "7%",  animationDelay: "0s",    animationDuration: "6s",  fontSize: "2rem"   } },
   { emoji: "🌟", style: { top: "15%", left: "88%", animationDelay: "1.5s",  animationDuration: "7s",  fontSize: "1.6rem" } },
