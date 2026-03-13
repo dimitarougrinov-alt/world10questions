@@ -29,14 +29,15 @@ export default function StatsScreen({ playerId, onBack }) {
     load();
   }, [playerId]);
 
-  function displayName(id) {
-    return "Player " + id.slice(0, 6).toUpperCase();
+  function displayName(player) {
+    if (player.country) return `Player from ${player.country}`;
+    return "Player " + player.id.slice(0, 6).toUpperCase();
   }
 
   return (
     <div className="screen stats-screen">
       <div className="stats-card">
-        <h2 className="stats-title">📊 My Stats</h2>
+        <h2 className="stats-title">🏆 Hall of Fame</h2>
 
         {loading ? (
           <p className="stats-loading">Loading…</p>
@@ -96,7 +97,7 @@ export default function StatsScreen({ playerId, onBack }) {
                     >
                       <span className="lb-rank">#{i + 1}</span>
                       <span className="lb-name">
-                        {p.id === playerId ? "You" : displayName(p.id)}
+                        {p.id === playerId ? "You" : displayName(p)}
                       </span>
                       <span className="lb-avg">{p.avgPercentage}%</span>
                       <span className="lb-games">{p.gamesPlayed} {p.gamesPlayed === 1 ? "game" : "games"}</span>

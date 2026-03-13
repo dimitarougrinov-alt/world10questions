@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase/config";
 import { generateQuiz } from "./utils/quizGenerator";
-import { getPlayerId } from "./utils/player";
+import { getPlayerId, getPlayerCountry } from "./utils/player";
 import { saveSession } from "./firebase/stats";
 
 import StartScreen from "./components/StartScreen";
@@ -47,7 +47,8 @@ export default function App() {
     setFinalScore(score);
     setScreen(SCREEN.RESULT);
     try {
-      await saveSession(playerId, score, questions.length);
+      const country = await getPlayerCountry();
+      await saveSession(playerId, score, questions.length, country);
     } catch (err) {
       console.error("Failed to save session:", err);
     }
