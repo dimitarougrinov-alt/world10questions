@@ -10,7 +10,7 @@ function getMessage(score) {
   return MESSAGES.find((m) => score >= m.min);
 }
 
-export default function ResultScreen({ score, total, onPlayAgain }) {
+export default function ResultScreen({ score, total, onPlayAgain, onStats }) {
   const percentage = Math.round((score / total) * 100);
   const { emoji, text } = getMessage(score);
 
@@ -30,6 +30,9 @@ export default function ResultScreen({ score, total, onPlayAgain }) {
 
         <button className="btn btn-primary" onClick={onPlayAgain}>
           Play Again
+        </button>
+        <button className="btn btn-secondary" onClick={onStats}>
+          📊 My Stats
         </button>
       </div>
     </div>

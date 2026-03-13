@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // Delay (ms) before advancing to next question after an answer is selected
-const FEEDBACK_DELAY = 1000;
+const FEEDBACK_DELAY = 2000;
 
 export default function QuizScreen({ questions, onFinish }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -11,12 +11,6 @@ export default function QuizScreen({ questions, onFinish }) {
 
   const question = questions[currentIndex];
   const total = questions.length;
-
-  // Reset per-question state whenever the question changes
-  useEffect(() => {
-    setSelected(null);
-    setLocked(false);
-  }, [currentIndex]);
 
   function handleAnswer(optionIndex) {
     if (locked) return;
@@ -28,6 +22,8 @@ export default function QuizScreen({ questions, onFinish }) {
 
     setTimeout(() => {
       if (currentIndex + 1 < total) {
+        setSelected(null);
+        setLocked(false);
         setScore(newScore);
         setCurrentIndex((i) => i + 1);
       } else {

@@ -1,4 +1,4 @@
-export default function StartScreen({ onStart, loading }) {
+export default function StartScreen({ onStart, onStats, loading }) {
   return (
     <div className="screen start-screen">
       <div className="start-card">
@@ -15,6 +15,9 @@ export default function StartScreen({ onStart, loading }) {
           disabled={loading}
         >
           {loading ? "Loading…" : "Start Quiz"}
+        </button>
+        <button className="btn btn-secondary" onClick={onStats}>
+          📊 My Stats
         </button>
       </div>
     </div>
