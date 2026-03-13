@@ -55,6 +55,7 @@ export default function App() {
   const [difficulty, setDifficulty] = useState(null);
   const [rewards, setRewards] = useState(null); // { xpEarned, totalXp, newLevel, leveledUp, streak, newBadges }
   const [unlockedDifficulty, setUnlockedDifficulty] = useState(null);
+  const [statsInitialView, setStatsInitialView] = useState("stats");
 
   // Detect challenge links on load
   useEffect(() => {
@@ -225,7 +226,7 @@ export default function App() {
 
       <div className={exiting ? "page-exit" : "page-enter"}>
         {screen === SCREEN.START && (
-          <StartScreen onStart={startQuiz} onStats={() => goTo(SCREEN.STATS)} loading={loading} totalXp={getTotalXp()} t={t} lang={lang} onSetLang={handleSetLang} />
+          <StartScreen onStart={startQuiz} onStats={(view = "stats") => { setStatsInitialView(view); goTo(SCREEN.STATS); }} loading={loading} totalXp={getTotalXp()} t={t} lang={lang} onSetLang={handleSetLang} />
         )}
         {screen === SCREEN.CHALLENGE && challengeData && (
           <ChallengeScreen
@@ -251,7 +252,7 @@ export default function App() {
             unlockedDifficulty={unlockedDifficulty}
             onPlayAgain={handlePlayAgain}
             onHome={handleGoHome}
-            onStats={() => goTo(SCREEN.STATS)}
+            onStats={() => { setStatsInitialView("stats"); goTo(SCREEN.STATS); }}
             t={t}
           />
         )}
@@ -263,6 +264,7 @@ export default function App() {
             onGoogleSignOut={handleGoogleSignOut}
             onBack={() => goTo(SCREEN.START)}
             t={t}
+            initialView={statsInitialView}
           />
         )}
       </div>

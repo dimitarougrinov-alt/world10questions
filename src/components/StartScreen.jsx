@@ -99,7 +99,7 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t,
 
         {/* Player identity card */}
         <div className="hero-identity">
-          <div className="hero-identity-level-ring">
+          <div className="hero-identity-level-ring" onClick={(e) => { ripple(e); onStats("progress"); }} style={{ cursor: "pointer" }} title="View progress">
             <div className="hero-identity-level-inner">{levelInfo.level}</div>
           </div>
           <div className="hero-identity-info">
@@ -123,7 +123,7 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t,
 
         {/* Earned badges strip */}
         {earnedBadges.length > 0 && (
-          <div className="hero-badges-strip">
+          <div className="hero-badges-strip" onClick={(e) => { ripple(e); onStats("progress"); }} style={{ cursor: "pointer" }} title="View badges">
             {earnedBadges.map(b => (
               <span key={b.id} className="hero-badge-pip" title={`${b.name}: ${b.desc}`}>
                 {b.emoji}

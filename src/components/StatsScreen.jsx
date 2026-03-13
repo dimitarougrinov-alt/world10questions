@@ -95,8 +95,8 @@ function displayName(player) {
   return "Player " + player.id.slice(0, 6).toUpperCase();
 }
 
-export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGoogleSignOut, onBack, t }) {
-  const [view, setView] = useState("stats");
+export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGoogleSignOut, onBack, t, initialView = "stats" }) {
+  const [view, setView] = useState(initialView);
   const [activeTab, setActiveTab] = useState("capitals");
   const [activeDiff, setActiveDiff] = useState("explorer");
   const [playerData, setPlayerData] = useState(null);
