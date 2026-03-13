@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { ripple } from "../utils/ripple";
 
 const FEEDBACK_DELAY = 2000;
 const LETTERS = ["A", "B", "C", "D"];
@@ -102,7 +103,7 @@ export default function QuizScreen({ questions, onFinish }) {
               <button
                 key={i}
                 className={`qz-option qz-option-${state}`}
-                onClick={() => handleAnswer(i)}
+                onClick={(e) => { ripple(e); handleAnswer(i); }}
                 disabled={locked}
               >
                 <span className="qz-letter" style={{ background: LETTER_COLORS[i] }}>

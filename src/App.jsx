@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { generateCapitalsQuiz, generateInventionsQuiz } from "./utils/quizGenerator";
 import countriesData from "./data/countries";
 import inventionsData from "./data/inventions";
@@ -17,10 +17,15 @@ const SCREEN = {
   STATS: "stats",
 };
 
+const TRANSITION_MS = 300;
+
 const playerId = getPlayerId();
 
 export default function App() {
   const [screen, setScreen] = useState(SCREEN.START);
+  const [exiting, setExiting] = useState(false);
+  const nextScreenRef = useRef(null);
+
   const [questions, setQuestions] = useState([]);
   const [finalScore, setFinalScore] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
@@ -29,6 +34,15 @@ export default function App() {
   const [error, setError] = useState(null);
   const [category, setCategory] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
+
+  function goTo(next) {
+    nextScreenRef.current = next;
+    setExiting(true);
+    setTimeout(() => {
+      setScreen(nextScreenRef.current);
+      setExiting(false);
+    }, TRANSITION_MS);
+  }
 
   const startQuiz = useCallback(async (cat, diff) => {
     setLoading(true);
@@ -43,7 +57,7 @@ export default function App() {
         quiz = generateCapitalsQuiz(countriesData, diff);
       }
       setQuestions(quiz);
-      setScreen(SCREEN.QUIZ);
+      goTo(SCREEN.QUIZ);
     } catch (err) {
       console.error("Failed to load quiz:", err);
       setError("Oops! Could not load the quiz. Please try again.");
@@ -55,7 +69,7 @@ export default function App() {
   async function handleFinish(score, timeMs) {
     setFinalScore(score);
     setTotalTime(timeMs);
-    setScreen(SCREEN.RESULT);
+    goTo(SCREEN.RESULT);
     try {
       const percentage = Math.round((score / questions.length) * 100);
       const [country, percentile] = await Promise.all([
@@ -70,13 +84,13 @@ export default function App() {
   }
 
   function handlePlayAgain() {
-    setScreen(SCREEN.START);
     setQuestions([]);
     setFinalScore(0);
     setTotalTime(0);
     setTimePercentile(null);
     setCategory(null);
     setDifficulty(null);
+    goTo(SCREEN.START);
   }
 
   return (
@@ -87,32 +101,34 @@ export default function App() {
         </div>
       )}
 
-      {screen === SCREEN.START && (
-        <StartScreen
-          onStart={startQuiz}
-          onStats={() => setScreen(SCREEN.STATS)}
-          loading={loading}
-        />
-      )}
-      {screen === SCREEN.QUIZ && (
-        <QuizScreen questions={questions} onFinish={handleFinish} />
-      )}
-      {screen === SCREEN.RESULT && (
-        <ResultScreen
-          score={finalScore}
-          total={questions.length}
-          totalTime={totalTime}
-          timePercentile={timePercentile}
-          onPlayAgain={handlePlayAgain}
-          onStats={() => setScreen(SCREEN.STATS)}
-        />
-      )}
-      {screen === SCREEN.STATS && (
-        <StatsScreen
-          playerId={playerId}
-          onBack={() => setScreen(SCREEN.START)}
-        />
-      )}
+      <div className={exiting ? "page-exit" : "page-enter"}>
+        {screen === SCREEN.START && (
+          <StartScreen
+            onStart={startQuiz}
+            onStats={() => goTo(SCREEN.STATS)}
+            loading={loading}
+          />
+        )}
+        {screen === SCREEN.QUIZ && (
+          <QuizScreen questions={questions} onFinish={handleFinish} />
+        )}
+        {screen === SCREEN.RESULT && (
+          <ResultScreen
+            score={finalScore}
+            total={questions.length}
+            totalTime={totalTime}
+            timePercentile={timePercentile}
+            onPlayAgain={handlePlayAgain}
+            onStats={() => goTo(SCREEN.STATS)}
+          />
+        )}
+        {screen === SCREEN.STATS && (
+          <StatsScreen
+            playerId={playerId}
+            onBack={() => goTo(SCREEN.START)}
+          />
+        )}
+      </div>
     </div>
   );
 }

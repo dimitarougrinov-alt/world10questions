@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ripple } from "../utils/ripple";
 import { getPlayerStats, getPlayerSessions, getLeaderboard } from "../firebase/stats";
 
 function formatTime(ms) {
@@ -192,7 +193,7 @@ export default function StatsScreen({ playerId, onBack }) {
           </>
         )}
 
-        <button className="sf-back-btn" onClick={onBack}>
+        <button className="sf-back-btn" onClick={(e) => { ripple(e); onBack(); }}>
           ← Back to Home
         </button>
 

@@ -26,6 +26,8 @@ function getSpeedMessage(percentile) {
   return { text: "Try to beat your time next round!", emoji: "⏳" };
 }
 
+import { ripple } from "../utils/ripple";
+
 export default function ResultScreen({ score, total, totalTime, timePercentile, onPlayAgain, onStats }) {
   const percentage = Math.round((score / total) * 100);
   const { emoji, text, sub } = getMessage(score);
@@ -83,10 +85,10 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
         )}
 
         <div className="res-actions">
-          <button className="res-btn-primary" onClick={onPlayAgain}>
+          <button className="res-btn-primary" onClick={(e) => { ripple(e); onPlayAgain(); }}>
             Play Again
           </button>
-          <button className="res-btn-ghost" onClick={onStats}>
+          <button className="res-btn-ghost" onClick={(e) => { ripple(e); onStats(); }}>
             🏆 Hall of Fame
           </button>
         </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ripple } from "../utils/ripple";
 
 const SHAPES = [
   { emoji: "⭐", style: { top: "8%",  left: "7%",  animationDelay: "0s",    animationDuration: "6s",  fontSize: "2rem"   } },
@@ -41,11 +42,11 @@ export default function StartScreen({ onStart, onStats, loading }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   function handleCategorySelect(cat) {
-    setSelectedCategory(cat);
+    setTimeout(() => setSelectedCategory(cat), 220);
   }
 
   function handleBack() {
-    setSelectedCategory(null);
+    setTimeout(() => setSelectedCategory(null), 220);
   }
 
   return (
@@ -86,7 +87,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
             <div className="hero-categories">
               <button
                 className="hero-cat-btn cat-capitals"
-                onClick={() => handleCategorySelect("capitals")}
+                onClick={(e) => { ripple(e); handleCategorySelect("capitals"); }}
                 disabled={loading}
               >
                 <span className="cat-btn-icon">🗺️</span>
@@ -96,7 +97,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
 
               <button
                 className="hero-cat-btn cat-inventions"
-                onClick={() => handleCategorySelect("inventions")}
+                onClick={(e) => { ripple(e); handleCategorySelect("inventions"); }}
                 disabled={loading}
               >
                 <span className="cat-btn-icon">💡</span>
@@ -106,7 +107,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
             </div>
 
             {/* Hall of fame */}
-            <button className="hero-hof-btn" onClick={onStats}>
+            <button className="hero-hof-btn" onClick={(e) => { ripple(e); onStats(); }}>
               🏆 Hall of Fame
             </button>
           </>
@@ -122,7 +123,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
                 <button
                   key={d.key}
                   className={`hero-diff-btn ${d.color}`}
-                  onClick={() => onStart(selectedCategory, d.key)}
+                  onClick={(e) => { ripple(e); onStart(selectedCategory, d.key); }}
                   disabled={loading}
                 >
                   <span className="diff-btn-icon">{d.icon}</span>
@@ -134,7 +135,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
 
             {loading && <p className="hero-loading">⏳ Loading your quiz…</p>}
 
-            <button className="hero-back-btn" onClick={handleBack}>
+            <button className="hero-back-btn" onClick={(e) => { ripple(e); handleBack(); }}>
               ← Back
             </button>
           </>
