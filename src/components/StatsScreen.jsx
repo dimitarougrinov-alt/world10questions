@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ripple } from "../utils/ripple";
 import { getPlayerStats, getPlayerSessions, getLeaderboard } from "../firebase/stats";
 import { ensureFriendCode, addFriendByCode, getFriends } from "../firebase/friends";
+import { getTotalXp, getLevelInfo, getStreak, getEarnedBadges, BADGE_DEFS } from "../utils/xp";
 
 function formatTime(ms) {
   if (!ms) return "—";
@@ -23,6 +24,63 @@ const DIFFICULTIES = [
   { key: "challenger", label: "Challenger", icon: "⚔️" },
   { key: "master",     label: "Master",     icon: "🔥" },
 ];
+
+// Badge IDs ordered by prestige for leaderboard display
+const PRESTIGE_ORDER = ["level_5", "level_3", "streak_7", "first_perfect", "master_play", "streak_3", "challenger_play", "first_game"];
+
+function topBadges(badgeIds = [], n = 3) {
+  return PRESTIGE_ORDER.filter(id => badgeIds.includes(id)).slice(0, n)
+    .map(id => BADGE_DEFS.find(b => b.id === id)?.emoji ?? "");
+}
+
+function ProgressView() {
+  const xp        = getTotalXp();
+  const levelInfo = getLevelInfo(xp);
+  const streak    = getStreak();
+  const earned    = getEarnedBadges();
+  const pct       = levelInfo.xpForLevel
+    ? Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))
+    : 100;
+
+  return (
+    <div className="sf-progress-view">
+      {/* Level card */}
+      <div className="sf-prog-level-card">
+        <div className="sf-prog-level-number">Level {levelInfo.level}</div>
+        <div className="sf-prog-xp-track">
+          <div className="sf-prog-xp-fill" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="sf-prog-xp-label">
+          {levelInfo.xpForLevel
+            ? `${levelInfo.xpIntoLevel} / ${levelInfo.xpForLevel} XP to next level`
+            : `${xp} XP — Max Level! ✨`}
+        </div>
+        {streak > 0 && (
+          <div className="sf-prog-streak">
+            🔥 {streak}-day streak
+          </div>
+        )}
+      </div>
+
+      {/* Badges */}
+      <h3 className="sf-section-title" style={{ marginTop: "1.25rem", marginBottom: "0.75rem" }}>
+        🏅 Badges ({earned.length} / {BADGE_DEFS.length})
+      </h3>
+      <div className="sf-badges-grid">
+        {BADGE_DEFS.map(b => {
+          const unlocked = earned.includes(b.id);
+          return (
+            <div key={b.id} className={`sf-badge-card${unlocked ? " sf-badge-unlocked" : " sf-badge-locked"}`}>
+              <span className="sf-badge-emoji">{unlocked ? b.emoji : "🔒"}</span>
+              <span className="sf-badge-name">{b.name}</span>
+              <span className="sf-badge-desc">{b.desc}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function displayName(player) {
   if (player.username) return player.username;
@@ -139,12 +197,18 @@ export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGo
         </div>
 
         {/* Top-level view toggle */}
-        <div className="sf-view-toggle">
+        <div className="sf-view-toggle sf-view-toggle-3">
           <button
             className={`sf-view-btn${view === "stats" ? " sf-view-active" : ""}`}
             onClick={() => handleViewSwitch("stats")}
           >
-            📊 My Stats
+            📊 Stats
+          </button>
+          <button
+            className={`sf-view-btn${view === "progress" ? " sf-view-active" : ""}`}
+            onClick={() => handleViewSwitch("progress")}
+          >
+            🏅 Progress
           </button>
           <button
             className={`sf-view-btn${view === "friends" ? " sf-view-active" : ""}`}
@@ -154,7 +218,9 @@ export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGo
           </button>
         </div>
 
-        {view === "stats" ? (
+        {view === "progress" ? (
+          <ProgressView />
+        ) : view === "stats" ? (
           <>
             {/* Category tabs */}
             <div className="sf-tabs">
@@ -244,10 +310,19 @@ export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGo
                     <ol className="sf-lb">
                       {catLeaderboard.map((p, i) => {
                         const isYou = p.id === playerId;
+                        const badges = topBadges(p.badges, 3);
                         return (
                           <li key={p.id} className={`sf-lb-item${isYou ? " sf-lb-you" : ""}`}>
                             <span className="sf-lb-rank">{i < 3 ? MEDALS[i] : `#${i + 1}`}</span>
-                            <span className="sf-lb-name">{isYou ? "⭐ You" : displayName(p)}</span>
+                            <div className="sf-lb-identity">
+                              <div className="sf-lb-name-row">
+                                <span className="sf-lb-level">Lv{p.level ?? 1}</span>
+                                <span className="sf-lb-name">{isYou ? "⭐ You" : displayName(p)}</span>
+                              </div>
+                              {badges.length > 0 && (
+                                <span className="sf-lb-badges">{badges.join("")}</span>
+                              )}
+                            </div>
                             <span className="sf-lb-pct">{p.bestPercentage}%</span>
                             <span className="sf-lb-time">{formatTime(p.bestTime)}</span>
                           </li>
@@ -260,7 +335,7 @@ export default function StatsScreen({ playerId, googleUser, onGoogleSignIn, onGo
             )}
           </>
         ) : (
-          /* FRIENDS VIEW */
+          /* FRIENDS VIEW - also covers progress's else branch, unreachable */
           <div className="sf-friends-view">
             {friendsLoading ? (
               <div className="sf-loading">

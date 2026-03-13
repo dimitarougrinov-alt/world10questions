@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg" cx="60%" cy="25%" r="70%">
+      <stop offset="0%" stop-color="#1a0533"/>
+      <stop offset="100%" stop-color="#030014"/>
+    </radialGradient>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF6B35" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FF6B35" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFD93D"/>
+      <stop offset="50%" stop-color="#FF914D"/>
+      <stop offset="100%" stop-color="#FF6B6B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Ambient glows -->
+  <ellipse cx="300" cy="200" rx="380" ry="280" fill="url(#glow1)"/>
+  <ellipse cx="950" cy="450" rx="320" ry="240" fill="url(#glow2)"/>
+
+  <!-- Stars -->
+  <circle cx="80"  cy="60"  r="2" fill="white" opacity="0.7"/>
+  <circle cx="200" cy="30"  r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="350" cy="80"  r="2.5" fill="white" opacity="0.8"/>
+  <circle cx="500" cy="20"  r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="680" cy="55"  r="2" fill="white" opacity="0.6"/>
+  <circle cx="820" cy="25"  r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="970" cy="70"  r="2" fill="white" opacity="0.7"/>
+  <circle cx="1100" cy="40" r="2.5" fill="white" opacity="0.6"/>
+  <circle cx="1160" cy="90" r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="50"  cy="300" r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="120" cy="500" r="2" fill="white" opacity="0.5"/>
+  <circle cx="1050" cy="200" r="2" fill="white" opacity="0.6"/>
+  <circle cx="1150" cy="350" r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="900" cy="580" r="2" fill="white" opacity="0.5"/>
+  <circle cx="400" cy="580" r="1.5" fill="white" opacity="0.4"/>
+  <circle cx="600" cy="600" r="2.5" fill="white" opacity="0.6"/>
+
+  <!-- Decorative ring around globe area -->
+  <circle cx="600" cy="260" r="160" fill="none" stroke="rgba(124,58,237,0.2)" stroke-width="1"/>
+  <circle cx="600" cy="260" r="185" fill="none" stroke="rgba(124,58,237,0.1)" stroke-width="1"/>
+
+  <!-- Globe emoji -->
+  <text x="600" y="320" font-size="140" text-anchor="middle" dominant-baseline="middle">🌍</text>
+
+  <!-- Title: World -->
+  <text x="600" y="430" font-family="Georgia, serif" font-size="56" font-weight="900" fill="url(#titleGrad)" text-anchor="middle" letter-spacing="8">WORLD</text>
+
+  <!-- Title: 10 (big) -->
+  <text x="600" y="508" font-family="Georgia, serif" font-size="96" font-weight="900" fill="url(#titleGrad)" text-anchor="middle" letter-spacing="4">10</text>
+
+  <!-- Title: Questions -->
+  <text x="600" y="565" font-family="Georgia, serif" font-size="44" font-weight="700" fill="rgba(255,255,255,0.85)" text-anchor="middle" letter-spacing="10">QUESTIONS</text>
+
+  <!-- Tagline -->
+  <text x="600" y="608" font-family="Georgia, sans-serif" font-size="22" fill="rgba(255,217,61,0.75)" text-anchor="middle" letter-spacing="2">Challenge your friends · 3 difficulty levels</text>
+</svg>

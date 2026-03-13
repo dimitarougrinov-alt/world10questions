@@ -100,6 +100,9 @@ export async function getLeaderboard(category = null, difficulty = null) {
       id: p.id,
       country: p.country,
       username: p.username ?? null,
+      level:   p.level   ?? 1,
+      badges:  p.badges  ?? [],
+      streak:  p.streak  ?? 0,
       gamesPlayed:    key ? (p[key]?.gamesPlayed    ?? 0)    : p.gamesPlayed,
       bestPercentage: key ? (p[key]?.bestPercentage ?? 0)    : p.bestPercentage,
       avgPercentage:  key ? (p[key]?.avgPercentage  ?? 0)    : p.avgPercentage,
@@ -118,6 +121,10 @@ export async function getLeaderboard(category = null, difficulty = null) {
 
 export async function saveUsername(playerId, username) {
   await setDoc(doc(db, "players", playerId), { username }, { merge: true });
+}
+
+export async function savePlayerProgress(playerId, xp, level, streak, badges) {
+  await setDoc(doc(db, "players", playerId), { xp, level, streak, badges }, { merge: true });
 }
 
 function mergeStatBlock(a, b) {

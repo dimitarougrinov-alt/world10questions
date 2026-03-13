@@ -3,9 +3,10 @@ import { generateCapitalsQuiz, generateInventionsQuiz } from "./utils/quizGenera
 import countriesData from "./data/countries";
 import inventionsData from "./data/inventions";
 import { getPlayerId, getPlayerCountry, USERNAME_KEY } from "./utils/player";
-import { saveSession, getTimePercentile, saveUsername, migratePlayer } from "./firebase/stats";
+import { saveSession, getTimePercentile, saveUsername, migratePlayer, savePlayerProgress } from "./firebase/stats";
 import { onAuthChange, signInWithGoogle, signOutUser } from "./firebase/auth";
 import { soundTransition } from "./utils/sounds";
+import { processGameRewards, getTotalXp, getLevelInfo, getEarnedBadges, getStreak } from "./utils/xp";
 
 import StartScreen from "./components/StartScreen";
 import QuizScreen from "./components/QuizScreen";
@@ -42,6 +43,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [category, setCategory] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
+  const [rewards, setRewards] = useState(null); // { xpEarned, totalXp, newLevel, leveledUp, streak, newBadges }
 
   // Detect challenge links on load
   useEffect(() => {
@@ -114,6 +116,9 @@ export default function App() {
   async function handleFinish(score, timeMs) {
     setFinalScore(score);
     setTotalTime(timeMs);
+    // Compute rewards synchronously before transitioning so ResultScreen has them immediately
+    const r = processGameRewards(score, questions.length, difficulty);
+    setRewards(r);
     goTo(SCREEN.RESULT);
     try {
       const percentage = Math.round((score / questions.length) * 100);
@@ -123,6 +128,8 @@ export default function App() {
       ]);
       setTimePercentile(percentile);
       await saveSession(playerId, score, questions.length, country, timeMs, category, difficulty);
+      // Persist XP/level/badges/streak to Firestore so leaderboard can show them
+      savePlayerProgress(playerId, getTotalXp(), getLevelInfo(getTotalXp()).level, getStreak(), getEarnedBadges());
       if (!localStorage.getItem(USERNAME_KEY)) {
         setTimeout(() => setShowUsernamePrompt(true), 800);
       }
@@ -176,6 +183,7 @@ export default function App() {
     setCategory(null);
     setDifficulty(null);
     setChallengeData(null);
+    setRewards(null);
     goTo(SCREEN.START);
   }
 
@@ -185,7 +193,7 @@ export default function App() {
 
       <div className={exiting ? "page-exit" : "page-enter"}>
         {screen === SCREEN.START && (
-          <StartScreen onStart={startQuiz} onStats={() => goTo(SCREEN.STATS)} loading={loading} />
+          <StartScreen onStart={startQuiz} onStats={() => goTo(SCREEN.STATS)} loading={loading} totalXp={getTotalXp()} />
         )}
         {screen === SCREEN.CHALLENGE && challengeData && (
           <ChallengeScreen
@@ -206,6 +214,7 @@ export default function App() {
             category={category}
             difficulty={difficulty}
             challengeData={challengeData}
+            rewards={rewards}
             onPlayAgain={handlePlayAgain}
             onStats={() => goTo(SCREEN.STATS)}
           />

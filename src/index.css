@@ -2324,3 +2324,370 @@ body {
 
 .sf-add-ok  { color: #4ade80; background: rgba(34,197,94,0.1); }
 .sf-add-err { color: #f87171; background: rgba(239,68,68,0.1); }
+
+/* ============================================================
+   LEVEL BAR — START SCREEN
+   ============================================================ */
+.hero-level-bar {
+  width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.hero-level-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.hero-level-badge {
+  font-family: "Fredoka One", cursive;
+  font-size: 0.9rem;
+  color: #FFD93D;
+  background: rgba(255, 217, 61, 0.12);
+  border: 1px solid rgba(255, 217, 61, 0.25);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+}
+
+.hero-level-xp {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hero-level-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hero-level-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD93D, #FF914D);
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(255, 217, 61, 0.5);
+  transition: width 0.6s ease;
+}
+
+/* ============================================================
+   LOCKED DIFFICULTY BUTTONS
+   ============================================================ */
+.hero-diff-btn.diff-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.hero-diff-btn.diff-locked:hover {
+  transform: none !important;
+}
+
+.diff-lock-icon {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.5rem;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* ============================================================
+   XP REWARDS PANEL — RESULT SCREEN
+   ============================================================ */
+.res-xp-panel {
+  width: 100%;
+  background: rgba(255, 217, 61, 0.06);
+  border: 1px solid rgba(255, 217, 61, 0.18);
+  border-radius: 1.1rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both;
+}
+
+.res-xp-earned {
+  font-family: "Fredoka One", cursive;
+  font-size: 1.4rem;
+  color: #FFD93D;
+  text-align: center;
+  filter: drop-shadow(0 0 8px rgba(255, 217, 61, 0.5));
+}
+
+.res-levelup {
+  font-family: "Fredoka One", cursive;
+  font-size: 1rem;
+  color: #4ECDC4;
+  text-align: center;
+  animation: levelUpPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+}
+
+@keyframes levelUpPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.res-xp-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.res-xp-level-label {
+  font-family: "Fredoka One", cursive;
+  font-size: 0.85rem;
+  color: #FFD93D;
+  min-width: 2.5rem;
+}
+
+.res-xp-track {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.res-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD93D, #FF914D);
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(255, 217, 61, 0.5);
+  transition: width 0.8s ease 0.4s;
+}
+
+.res-xp-sub-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.res-streak {
+  font-family: "Fredoka One", cursive;
+  font-size: 0.95rem;
+  color: #FF914D;
+  text-align: center;
+}
+
+.res-new-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.res-badges-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  width: 100%;
+  text-align: center;
+  margin-bottom: -0.1rem;
+}
+
+.res-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+
+/* ============================================================
+   VIEW TOGGLE — 3 TABS
+   ============================================================ */
+.sf-view-toggle-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ============================================================
+   PROGRESS VIEW
+   ============================================================ */
+.sf-progress-view {
+  width: 100%;
+}
+
+.sf-prog-level-card {
+  background: rgba(255, 217, 61, 0.07);
+  border: 1px solid rgba(255, 217, 61, 0.2);
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.sf-prog-level-number {
+  font-family: "Fredoka One", cursive;
+  font-size: 2.4rem;
+  background: linear-gradient(135deg, #FFD93D, #FF914D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 8px rgba(255, 217, 61, 0.4));
+  line-height: 1;
+}
+
+.sf-prog-xp-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.sf-prog-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD93D, #FF914D);
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(255, 217, 61, 0.5);
+  transition: width 0.8s ease;
+}
+
+.sf-prog-xp-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sf-prog-streak {
+  font-family: "Fredoka One", cursive;
+  font-size: 1rem;
+  color: #FF914D;
+}
+
+/* Badges grid */
+.sf-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.55rem;
+  margin-bottom: 0.5rem;
+}
+
+.sf-badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.65rem 0.3rem;
+  border-radius: 1rem;
+  text-align: center;
+  transition: transform 0.15s;
+}
+
+.sf-badge-card:hover { transform: translateY(-2px); }
+
+.sf-badge-unlocked {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sf-badge-locked {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  opacity: 0.45;
+}
+
+.sf-badge-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.sf-badge-name {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.2;
+}
+
+.sf-badge-desc {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.2;
+}
+
+@media (max-width: 420px) {
+  .sf-badges-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ============================================================
+   LEADERBOARD — LEVEL + BADGES
+   ============================================================ */
+.sf-lb-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow: hidden;
+}
+
+.sf-lb-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sf-lb-level {
+  font-family: "Fredoka One", cursive;
+  font-size: 0.72rem;
+  color: #FFD93D;
+  background: rgba(255, 217, 61, 0.12);
+  border: 1px solid rgba(255, 217, 61, 0.22);
+  border-radius: 999px;
+  padding: 0.05rem 0.45rem;
+  flex-shrink: 0;
+}
+
+.sf-lb-badges {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1;
+}
+
+/* ============================================================
+   HERO BADGES STRIP — START SCREEN
+   ============================================================ */
+.hero-badges-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.hero-badge-pip {
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 0.3rem 0.45rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.7rem;
+  cursor: default;
+  transition: transform 0.15s, background 0.15s;
+  filter: drop-shadow(0 0 4px rgba(255, 217, 61, 0.3));
+  animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.hero-badge-pip:hover {
+  transform: translateY(-3px) scale(1.2);
+  background: rgba(255, 217, 61, 0.12);
+  filter: drop-shadow(0 0 8px rgba(255, 217, 61, 0.55));
+}
+
+@keyframes badgePop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}

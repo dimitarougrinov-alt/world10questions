@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ripple } from "../utils/ripple";
+import { getLevelInfo, isChallengerUnlocked, isMasterUnlocked, CHALLENGER_UNLOCK_LEVEL, MASTER_UNLOCK_LEVEL, getEarnedBadges, BADGE_DEFS } from "../utils/xp";
 
 
 const SHAPES = [
@@ -39,8 +40,14 @@ const DIFFICULTIES = [
   },
 ];
 
-export default function StartScreen({ onStart, onStats, loading }) {
+export default function StartScreen({ onStart, onStats, loading, totalXp = 0 }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const levelInfo           = getLevelInfo(totalXp);
+  const challengerUnlocked  = isChallengerUnlocked(totalXp);
+  const masterUnlocked      = isMasterUnlocked(totalXp);
+  const earnedBadges        = getEarnedBadges()
+    .map(id => BADGE_DEFS.find(b => b.id === id))
+    .filter(Boolean);
 
   function handleCategorySelect(cat) {
     setTimeout(() => setSelectedCategory(cat), 220);
@@ -77,6 +84,35 @@ export default function StartScreen({ onStart, onStats, loading }) {
           <span className="hero-title-10">10</span>
           <span className="hero-title-questions">Questions</span>
         </h1>
+
+        {/* Level indicator */}
+        <div className="hero-level-bar">
+          <div className="hero-level-info">
+            <span className="hero-level-badge">Lv {levelInfo.level}</span>
+            {levelInfo.xpForLevel ? (
+              <span className="hero-level-xp">{levelInfo.xpIntoLevel} / {levelInfo.xpForLevel} XP</span>
+            ) : (
+              <span className="hero-level-xp">Max Level ✨</span>
+            )}
+          </div>
+          <div className="hero-level-track">
+            <div
+              className="hero-level-fill"
+              style={{ width: levelInfo.xpForLevel ? `${Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))}%` : "100%" }}
+            />
+          </div>
+        </div>
+
+        {/* Earned badges strip */}
+        {earnedBadges.length > 0 && (
+          <div className="hero-badges-strip">
+            {earnedBadges.map(b => (
+              <span key={b.id} className="hero-badge-pip" title={`${b.name}: ${b.desc}`}>
+                {b.emoji}
+              </span>
+            ))}
+          </div>
+        )}
 
         {!selectedCategory ? (
           <>
@@ -120,18 +156,30 @@ export default function StartScreen({ onStart, onStats, loading }) {
 
             {/* Step 2: Difficulty buttons */}
             <div className="hero-difficulties">
-              {DIFFICULTIES.map((d) => (
-                <button
-                  key={d.key}
-                  className={`hero-diff-btn ${d.color}`}
-                  onClick={(e) => { ripple(e); onStart(selectedCategory, d.key); }}
-                  disabled={loading}
-                >
-                  <span className="diff-btn-icon">{d.icon}</span>
-                  <span className="diff-btn-label">{d.label}</span>
-                  <span className="diff-btn-desc">{d.desc}</span>
-                </button>
-              ))}
+              {DIFFICULTIES.map((d) => {
+                const locked =
+                  (d.key === "challenger" && !challengerUnlocked) ||
+                  (d.key === "master"     && !masterUnlocked);
+                const unlockLevel =
+                  d.key === "challenger" ? CHALLENGER_UNLOCK_LEVEL :
+                  d.key === "master"     ? MASTER_UNLOCK_LEVEL : null;
+                return (
+                  <button
+                    key={d.key}
+                    className={`hero-diff-btn ${d.color}${locked ? " diff-locked" : ""}`}
+                    onClick={(e) => { if (!locked) { ripple(e); onStart(selectedCategory, d.key); } }}
+                    disabled={loading || locked}
+                    aria-disabled={locked}
+                  >
+                    {locked && <span className="diff-lock-icon">🔒</span>}
+                    <span className="diff-btn-icon">{d.icon}</span>
+                    <span className="diff-btn-label">{d.label}</span>
+                    <span className="diff-btn-desc">
+                      {locked ? `Reach Level ${unlockLevel} to unlock` : d.desc}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {loading && <p className="hero-loading">⏳ Loading your quiz…</p>}

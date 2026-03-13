@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ripple } from "../utils/ripple";
 import { USERNAME_KEY } from "../utils/player";
+import { getLevelInfo, BADGE_DEFS } from "../utils/xp";
 
 const MESSAGES = [
   { min: 10, emoji: "🏆", text: "Legendary!", sub: "You got every single one!" },
@@ -30,12 +31,16 @@ function getSpeedMessage(percentile) {
   return { text: "Try to beat your time next round!", emoji: "⏳" };
 }
 
-export default function ResultScreen({ score, total, totalTime, timePercentile, category, difficulty, challengeData, onPlayAgain, onStats }) {
+export default function ResultScreen({ score, total, totalTime, timePercentile, category, difficulty, challengeData, rewards, onPlayAgain, onStats }) {
   const [shareState, setShareState] = useState("idle"); // idle | copied | shared
   const percentage = Math.round((score / total) * 100);
   const { emoji, text, sub } = getMessage(score);
   const timeStr = formatTime(totalTime);
   const speedMsg = getSpeedMessage(timePercentile);
+
+  // XP / level rewards
+  const levelInfo = rewards ? getLevelInfo(rewards.totalXp) : null;
+  const newBadgeDefs = rewards?.newBadges?.map(id => BADGE_DEFS.find(b => b.id === id)).filter(Boolean) ?? [];
 
   // Challenge comparison
   const challengeWon = challengeData ? score > challengeData.score : null;
@@ -111,6 +116,45 @@ export default function ResultScreen({ score, total, totalTime, timePercentile, 
               <div className="res-stat-pill res-stat-pill-speed">
                 <span className="res-stat-pill-icon">{speedMsg.emoji}</span>
                 <span className="res-stat-pill-val">{speedMsg.text}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* XP / Level panel */}
+        {rewards && (
+          <div className="res-xp-panel">
+            <div className="res-xp-earned">+{rewards.xpEarned} XP</div>
+            {rewards.leveledUp && (
+              <div className="res-levelup">⬆️ Level Up! You're now Level {rewards.newLevel}</div>
+            )}
+            <div className="res-xp-bar-row">
+              <span className="res-xp-level-label">Lv {levelInfo.level}</span>
+              <div className="res-xp-track">
+                <div
+                  className="res-xp-fill"
+                  style={{ width: levelInfo.xpForLevel
+                    ? `${Math.min(100, Math.round((levelInfo.xpIntoLevel / levelInfo.xpForLevel) * 100))}%`
+                    : "100%" }}
+                />
+              </div>
+              <span className="res-xp-sub-label">
+                {levelInfo.xpForLevel
+                  ? `${levelInfo.xpIntoLevel}/${levelInfo.xpForLevel}`
+                  : "MAX"}
+              </span>
+            </div>
+            {rewards.streak > 1 && (
+              <div className="res-streak">🔥 {rewards.streak}-day streak!</div>
+            )}
+            {newBadgeDefs.length > 0 && (
+              <div className="res-new-badges">
+                <span className="res-badges-label">New badges:</span>
+                {newBadgeDefs.map(b => (
+                  <span key={b.id} className="res-badge-pill" title={b.desc}>
+                    {b.emoji} {b.name}
+                  </span>
+                ))}
               </div>
             )}
           </div>
