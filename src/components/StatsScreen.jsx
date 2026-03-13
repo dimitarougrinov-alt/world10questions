@@ -6,18 +6,25 @@ export default function StatsScreen({ playerId, onBack }) {
   const [sessions, setSessions] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     async function load() {
-      const [s, hist, lb] = await Promise.all([
-        getPlayerStats(playerId),
-        getPlayerSessions(playerId),
-        getLeaderboard(),
-      ]);
-      setStats(s);
-      setSessions(hist);
-      setLeaderboard(lb);
-      setLoading(false);
+      try {
+        const [s, hist, lb] = await Promise.all([
+          getPlayerStats(playerId),
+          getPlayerSessions(playerId),
+          getLeaderboard(),
+        ]);
+        setStats(s);
+        setSessions(hist);
+        setLeaderboard(lb);
+      } catch (err) {
+        console.error(err);
+        setError(`${err.code}: ${err.message}`);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [playerId]);
@@ -33,6 +40,8 @@ export default function StatsScreen({ playerId, onBack }) {
 
         {loading ? (
           <p className="stats-loading">Loading…</p>
+        ) : error ? (
+          <p className="stats-empty" style={{color: "red"}}>{error}</p>
         ) : (
           <>
             {/* Personal summary */}

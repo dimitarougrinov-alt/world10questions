@@ -32,7 +32,7 @@ export default function ResultScreen({ score, total, onPlayAgain, onStats }) {
           Play Again
         </button>
         <button className="btn btn-secondary" onClick={onStats}>
-          📊 My Stats
+          My Hall of Fame
         </button>
       </div>
     </div>

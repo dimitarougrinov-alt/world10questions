@@ -100,7 +100,7 @@ body {
   font-size: 1.1rem;
   color: var(--color-muted);
   line-height: 1.6;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* ============================================================
@@ -262,24 +262,37 @@ body {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--color-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.start-card .btn-primary,
+.result-card .btn-primary {
+  margin-bottom: 0;
 }
 
 /* Secondary button (Stats) */
 .btn-secondary {
-  background: transparent;
+  background: #eef5ff;
   color: var(--color-primary);
   font-size: 1rem;
-  padding: 0.6rem 1.8rem;
-  border: 2px solid var(--color-primary);
+  padding: 0.7rem 2rem;
+  border: 2px solid #c8dffd;
   margin-top: 0.75rem;
   display: block;
   width: 100%;
+  box-shadow: 0 3px 0 #c8dffd;
 }
 
 .btn-secondary:hover {
-  background: #eef5ff;
-  transform: translateY(-1px);
+  background: #dceeff;
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #c8dffd;
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #c8dffd;
 }
 
 /* ============================================================

@@ -17,7 +17,7 @@ export default function StartScreen({ onStart, onStats, loading }) {
           {loading ? "Loading…" : "Start Quiz"}
         </button>
         <button className="btn btn-secondary" onClick={onStats}>
-          📊 My Stats
+          My Hall of Fame
         </button>
       </div>
     </div>
