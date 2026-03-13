@@ -1,16 +1,3 @@
-/**
- * Generates a 10-question quiz from a list of country-capital pairs.
- *
- * Each question:
- *   { country, options: [string x4], correctIndex: number }
- *
- * Algorithm:
- *  1. Shuffle all countries.
- *  2. Pick first 10 as the quiz countries.
- *  3. For each, pick 3 random wrong capitals from the remaining pool.
- *  4. Shuffle the 4 options and record the correct index.
- */
-
 function shuffle(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -20,25 +7,44 @@ function shuffle(array) {
   return arr;
 }
 
-export function generateQuiz(countries) {
-  if (countries.length < 13) {
-    throw new Error("Need at least 13 countries to generate a quiz.");
+/**
+ * Generic quiz generator.
+ * items: [{ questionText: string, answer: string }]
+ * Returns: [{ questionText, options: [string x4], correctIndex }]
+ */
+function generateQuiz(items) {
+  if (items.length < 13) {
+    throw new Error("Need at least 13 items to generate a quiz.");
   }
+  const shuffled = shuffle(items);
+  const quizItems = shuffled.slice(0, 10);
+  const answerPool = shuffled.slice(10).map((i) => i.answer);
 
-  const shuffled = shuffle(countries);
-  const quizCountries = shuffled.slice(0, 10);
-  const remainingCapitals = shuffled.slice(10).map((c) => c.capital);
-
-  return quizCountries.map((entry) => {
-    const wrongPool = shuffle(remainingCapitals).slice(0, 3);
-    const optionsUnshuffled = [entry.capital, ...wrongPool];
-    const options = shuffle(optionsUnshuffled);
-    const correctIndex = options.indexOf(entry.capital);
-
+  return quizItems.map((entry) => {
+    const wrongAnswers = shuffle(answerPool).slice(0, 3);
+    const options = shuffle([entry.answer, ...wrongAnswers]);
     return {
-      country: entry.country,
+      questionText: entry.questionText,
       options,
-      correctIndex,
+      correctIndex: options.indexOf(entry.answer),
     };
   });
+}
+
+export function generateCapitalsQuiz(countries, difficulty = null) {
+  const filtered = difficulty ? countries.filter((c) => c.difficulty === difficulty) : countries;
+  const items = filtered.map((c) => ({
+    questionText: `What is the capital of ${c.country}?`,
+    answer: c.capital,
+  }));
+  return generateQuiz(items);
+}
+
+export function generateInventionsQuiz(inventions, difficulty = null) {
+  const filtered = difficulty ? inventions.filter((i) => i.difficulty === difficulty) : inventions;
+  const items = filtered.map((i) => ({
+    questionText: `Who invented the ${i.invention}?`,
+    answer: i.inventor,
+  }));
+  return generateQuiz(items);
 }

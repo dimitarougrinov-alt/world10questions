@@ -1,39 +1,95 @@
 const MESSAGES = [
-  { min: 10, emoji: "🏆", text: "Amazing! Geography master!" },
-  { min: 8,  emoji: "🌟", text: "Excellent work!" },
-  { min: 6,  emoji: "😊", text: "Good job!" },
-  { min: 4,  emoji: "📚", text: "Not bad, keep practising!" },
-  { min: 0,  emoji: "💪", text: "Try again — you can do it!" },
+  { min: 10, emoji: "🏆", text: "Legendary!", sub: "You got every single one!" },
+  { min: 8,  emoji: "🌟", text: "Superstar!",  sub: "Nearly perfect — amazing!" },
+  { min: 6,  emoji: "🚀", text: "Great Job!",  sub: "You're on your way up!" },
+  { min: 4,  emoji: "📚", text: "Keep Going!", sub: "Practice makes perfect!" },
+  { min: 0,  emoji: "💪", text: "Try Again!",  sub: "You've got this next time!" },
 ];
 
 function getMessage(score) {
   return MESSAGES.find((m) => score >= m.min);
 }
 
-export default function ResultScreen({ score, total, onPlayAgain, onStats }) {
+function formatTime(ms) {
+  if (!ms) return null;
+  const s = ms / 1000;
+  if (s < 60) return s.toFixed(1) + "s";
+  const m = Math.floor(s / 60);
+  return `${m}m ${(s % 60).toFixed(1)}s`;
+}
+
+function getSpeedMessage(percentile) {
+  if (percentile === null) return null;
+  if (percentile >= 90) return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "⚡" };
+  if (percentile >= 50) return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "🚀" };
+  if (percentile > 0)   return { text: `Faster than ${percentile}% of players with the same score!`, emoji: "👍" };
+  return { text: "Try to beat your time next round!", emoji: "⏳" };
+}
+
+export default function ResultScreen({ score, total, totalTime, timePercentile, onPlayAgain, onStats }) {
   const percentage = Math.round((score / total) * 100);
-  const { emoji, text } = getMessage(score);
+  const { emoji, text, sub } = getMessage(score);
+  const timeStr = formatTime(totalTime);
+  const speedMsg = getSpeedMessage(timePercentile);
 
   return (
-    <div className="screen result-screen">
-      <div className="result-card">
-        <div className="result-emoji" aria-hidden="true">{emoji}</div>
-        <h2 className="result-message">{text}</h2>
+    <div className="res-screen">
 
-        <div className="score-display">
-          <span className="score-big">{score}</span>
-          <span className="score-divider"> / </span>
-          <span className="score-total">{total}</span>
+      {/* Celebration sparks */}
+      <div className="res-sparks" aria-hidden="true">
+        {["⭐","✨","💫","🌟","⭐","✨","💫","🌟","⭐","✨","💫","🌟"].map((s, i) => (
+          <span key={i} className="res-spark" style={{
+            left: `${5 + i * 8}%`,
+            animationDelay: `${i * 0.12}s`,
+            animationDuration: `${1.4 + (i % 3) * 0.3}s`,
+            fontSize: `${0.9 + (i % 3) * 0.4}rem`,
+          }}>{s}</span>
+        ))}
+      </div>
+
+      <div className="res-card">
+        <div className="res-emoji">{emoji}</div>
+        <h2 className="res-title">{text}</h2>
+        <p className="res-sub">{sub}</p>
+
+        <div className="res-score-wrap">
+          <span className="res-score-big">{score}</span>
+          <span className="res-score-sep">/</span>
+          <span className="res-score-total">{total}</span>
         </div>
 
-        <p className="score-percent">{percentage}% correct</p>
+        <div className="res-pct-bar-wrap">
+          <div className="res-pct-bar">
+            <div className="res-pct-fill" style={{ width: `${percentage}%` }} />
+          </div>
+          <span className="res-pct-label">{percentage}%</span>
+        </div>
 
-        <button className="btn btn-primary" onClick={onPlayAgain}>
-          Play Again
-        </button>
-        <button className="btn btn-secondary" onClick={onStats}>
-          My Hall of Fame
-        </button>
+        {(timeStr || speedMsg) && (
+          <div className="res-stats-row">
+            {timeStr && (
+              <div className="res-stat-pill">
+                <span className="res-stat-pill-icon">⏱</span>
+                <span className="res-stat-pill-val">{timeStr}</span>
+              </div>
+            )}
+            {speedMsg && (
+              <div className="res-stat-pill res-stat-pill-speed">
+                <span className="res-stat-pill-icon">{speedMsg.emoji}</span>
+                <span className="res-stat-pill-val">{speedMsg.text}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="res-actions">
+          <button className="res-btn-primary" onClick={onPlayAgain}>
+            Play Again
+          </button>
+          <button className="res-btn-ghost" onClick={onStats}>
+            🏆 Hall of Fame
+          </button>
+        </div>
       </div>
     </div>
   );

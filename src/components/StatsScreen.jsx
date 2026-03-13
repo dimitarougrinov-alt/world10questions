@@ -1,24 +1,57 @@
 import { useEffect, useState } from "react";
 import { getPlayerStats, getPlayerSessions, getLeaderboard } from "../firebase/stats";
 
+function formatTime(ms) {
+  if (!ms) return "—";
+  const s = ms / 1000;
+  if (s < 60) return s.toFixed(1) + "s";
+  const m = Math.floor(s / 60);
+  return `${m}m ${(s % 60).toFixed(1)}s`;
+}
+
+const MEDALS = ["🥇", "🥈", "🥉"];
+
+const CATEGORIES = [
+  { key: "capitals",   label: "World Capitals", icon: "🗺️" },
+  { key: "inventions", label: "Inventions",     icon: "💡" },
+];
+
+const DIFFICULTIES = [
+  { key: "explorer",   label: "Explorer",   icon: "🌱" },
+  { key: "challenger", label: "Challenger", icon: "⚔️" },
+  { key: "master",     label: "Master",     icon: "🔥" },
+];
+
 export default function StatsScreen({ playerId, onBack }) {
-  const [stats, setStats] = useState(null);
-  const [sessions, setSessions] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
+  const [activeTab, setActiveTab] = useState("capitals");
+  const [activeDiff, setActiveDiff] = useState("explorer");
+  const [playerData, setPlayerData] = useState(null);
+  const [allSessions, setAllSessions] = useState([]);
+  const [leaderboards, setLeaderboards] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const [s, hist, lb] = await Promise.all([
+        const lbPromises = [];
+        const lbKeys = [];
+        for (const cat of CATEGORIES) {
+          for (const diff of DIFFICULTIES) {
+            lbKeys.push(`${cat.key}_${diff.key}`);
+            lbPromises.push(getLeaderboard(cat.key, diff.key));
+          }
+        }
+        const [pd, sessions, ...lbResults] = await Promise.all([
           getPlayerStats(playerId),
           getPlayerSessions(playerId),
-          getLeaderboard(),
+          ...lbPromises,
         ]);
-        setStats(s);
-        setSessions(hist);
-        setLeaderboard(lb);
+        setPlayerData(pd);
+        setAllSessions(sessions);
+        const lbMap = {};
+        lbKeys.forEach((k, i) => { lbMap[k] = lbResults[i]; });
+        setLeaderboards(lbMap);
       } catch (err) {
         console.error(err);
         setError(`${err.code}: ${err.message}`);
@@ -34,84 +67,135 @@ export default function StatsScreen({ playerId, onBack }) {
     return "Player " + player.id.slice(0, 6).toUpperCase();
   }
 
+  const statKey = `${activeTab}_${activeDiff}`;
+  const catStats = playerData?.[statKey] ?? null;
+  const catSessions = allSessions.filter((s) => s.category === activeTab && s.difficulty === activeDiff);
+  const catLeaderboard = leaderboards[statKey] ?? [];
+
   return (
-    <div className="screen stats-screen">
-      <div className="stats-card">
-        <h2 className="stats-title">🏆 Hall of Fame</h2>
+    <div className="sf-screen">
+      <div className="sf-card">
+
+        {/* Header */}
+        <div className="sf-header">
+          <div className="sf-trophy">🏆</div>
+          <h2 className="sf-title">Hall of Fame</h2>
+        </div>
+
+        {/* Category tabs */}
+        <div className="sf-tabs">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.key}
+              className={`sf-tab${activeTab === cat.key ? " sf-tab-active" : ""}`}
+              onClick={() => setActiveTab(cat.key)}
+            >
+              {cat.icon} {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Difficulty sub-tabs */}
+        <div className="sf-diff-tabs">
+          {DIFFICULTIES.map((d) => (
+            <button
+              key={d.key}
+              className={`sf-diff-tab sf-diff-${d.key}${activeDiff === d.key ? " sf-diff-active" : ""}`}
+              onClick={() => setActiveDiff(d.key)}
+            >
+              {d.icon} {d.label}
+            </button>
+          ))}
+        </div>
 
         {loading ? (
-          <p className="stats-loading">Loading…</p>
+          <div className="sf-loading">
+            <span className="sf-loading-dot" />
+            <span className="sf-loading-dot" />
+            <span className="sf-loading-dot" />
+          </div>
         ) : error ? (
-          <p className="stats-empty" style={{color: "red"}}>{error}</p>
+          <p className="sf-error">{error}</p>
         ) : (
           <>
-            {/* Personal summary */}
-            <div className="stats-section">
-              <h3 className="stats-section-title">Your Performance</h3>
-              {stats ? (
-                <div className="stats-grid">
-                  <div className="stat-box">
-                    <span className="stat-value">{stats.gamesPlayed}</span>
-                    <span className="stat-label">Games Played</span>
+            {/* Personal stats for this category + difficulty */}
+            <section className="sf-section">
+              <h3 className="sf-section-title">⚡ Your Stats</h3>
+              {catStats ? (
+                <div className="sf-stat-grid">
+                  <div className="sf-stat-box">
+                    <span className="sf-stat-val">{catStats.gamesPlayed}</span>
+                    <span className="sf-stat-lbl">Games</span>
                   </div>
-                  <div className="stat-box">
-                    <span className="stat-value">{stats.avgPercentage}%</span>
-                    <span className="stat-label">Avg Score</span>
+                  <div className="sf-stat-box">
+                    <span className="sf-stat-val">{catStats.avgPercentage}%</span>
+                    <span className="sf-stat-lbl">Avg Score</span>
                   </div>
-                  <div className="stat-box">
-                    <span className="stat-value">{stats.bestPercentage}%</span>
-                    <span className="stat-label">Best Score</span>
+                  <div className="sf-stat-box">
+                    <span className="sf-stat-val sf-stat-gold">{catStats.bestPercentage}%</span>
+                    <span className="sf-stat-lbl">Best Score</span>
+                  </div>
+                  <div className="sf-stat-box sf-stat-wide">
+                    <span className="sf-stat-val">{formatTime(catStats.bestTime)}</span>
+                    <span className="sf-stat-lbl">Fastest at Best Score</span>
                   </div>
                 </div>
               ) : (
-                <p className="stats-empty">No games played yet. Start a quiz!</p>
+                <p className="sf-empty">
+                  No {DIFFICULTIES.find(d => d.key === activeDiff)?.icon} {activeDiff} {activeTab} games yet — go play one! 🚀
+                </p>
               )}
-            </div>
+            </section>
 
-            {/* Recent history */}
-            {sessions.length > 0 && (
-              <div className="stats-section">
-                <h3 className="stats-section-title">Recent Games</h3>
-                <ul className="session-list">
-                  {sessions.map((s) => (
-                    <li key={s.id} className="session-item">
-                      <span className="session-score">{s.score}/{s.total}</span>
-                      <span className="session-pct">{s.percentage}%</span>
+            {/* Recent games */}
+            {catSessions.length > 0 && (
+              <section className="sf-section">
+                <h3 className="sf-section-title">🕹️ Recent Games</h3>
+                <ul className="sf-sessions">
+                  {catSessions.slice(0, 10).map((s, i) => (
+                    <li key={s.id} className="sf-session">
+                      <span className="sf-session-num">#{i + 1}</span>
+                      <span className="sf-session-score">{s.score}/{s.total}</span>
+                      <span className="sf-session-pct">{s.percentage}%</span>
+                      <span className="sf-session-time">⏱ {formatTime(s.totalTime)}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </section>
             )}
 
-            {/* Global leaderboard */}
-            <div className="stats-section">
-              <h3 className="stats-section-title">🏆 Global Leaderboard</h3>
-              {leaderboard.length === 0 ? (
-                <p className="stats-empty">No players yet.</p>
+            {/* Leaderboard */}
+            <section className="sf-section">
+              <h3 className="sf-section-title">🌍 Global Leaderboard</h3>
+              {catLeaderboard.length === 0 ? (
+                <p className="sf-empty">No players yet. Be the first! 🌟</p>
               ) : (
-                <ol className="leaderboard-list">
-                  {leaderboard.map((p, i) => (
-                    <li
-                      key={p.id}
-                      className={`leaderboard-item${p.id === playerId ? " leaderboard-you" : ""}`}
-                    >
-                      <span className="lb-rank">#{i + 1}</span>
-                      <span className="lb-name">
-                        {p.id === playerId ? "You" : displayName(p)}
-                      </span>
-                      <span className="lb-avg">{p.avgPercentage}%</span>
-                      <span className="lb-games">{p.gamesPlayed} {p.gamesPlayed === 1 ? "game" : "games"}</span>
-                    </li>
-                  ))}
+                <ol className="sf-lb">
+                  {catLeaderboard.map((p, i) => {
+                    const isYou = p.id === playerId;
+                    return (
+                      <li key={p.id} className={`sf-lb-item${isYou ? " sf-lb-you" : ""}`}>
+                        <span className="sf-lb-rank">
+                          {i < 3 ? MEDALS[i] : `#${i + 1}`}
+                        </span>
+                        <span className="sf-lb-name">
+                          {isYou ? "⭐ You" : displayName(p)}
+                        </span>
+                        <span className="sf-lb-pct">{p.bestPercentage}%</span>
+                        <span className="sf-lb-time">{formatTime(p.bestTime)}</span>
+                      </li>
+                    );
+                  })}
                 </ol>
               )}
-            </div>
+            </section>
           </>
         )}
 
-        <button className="btn btn-primary" onClick={onBack}>
-          Back
+        <button className="sf-back-btn" onClick={onBack}>
+          ← Back to Home
         </button>
+
       </div>
     </div>
   );
