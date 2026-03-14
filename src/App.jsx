@@ -9,7 +9,7 @@ import { getLang, setLang, getT } from "./i18n/index";
 import { saveSession, getTimePercentile, saveUsername, migratePlayer, savePlayerProgress } from "./firebase/stats";
 import { onAuthChange, signInWithGoogle, signOutUser } from "./firebase/auth";
 import { soundTransition, soundPerfect, soundLevelUp } from "./utils/sounds";
-import { preloadMusic, startMusic, setMuted } from "./utils/music";
+import { preloadMusic, startMusic, setMuted, pauseMusic, resumeMusic } from "./utils/music";
 import { processGameRewards, getTotalXp, getLevelInfo, getEarnedBadges, getStreak, recordCategoryResult, isChallengerUnlockedForCat, isMasterUnlockedForCat } from "./utils/xp";
 
 import StartScreen from "./components/StartScreen";
@@ -18,6 +18,7 @@ import ResultScreen from "./components/ResultScreen";
 import StatsScreen from "./components/StatsScreen";
 import UsernamePrompt from "./components/UsernamePrompt";
 import ChallengeScreen from "./components/ChallengeScreen";
+import LangSwitchPopup from "./components/LangSwitchPopup";
 
 const SCREEN = {
   START: "start",
@@ -33,10 +34,31 @@ export default function App() {
   const [playerId, setPlayerId] = useState(() => getPlayerId());
   const [lang, setAppLang] = useState(() => getLang());
   const t = getT(lang);
+  const [langPopupTarget, setLangPopupTarget] = useState(null);
 
-  function handleSetLang(l) {
+  function doSetLang(l) {
     setLang(l);
     setAppLang(l);
+  }
+
+  function handleSetLang(newLang) {
+    if (newLang === lang) return;
+    const seenKey = `wq_lsp_seen_${newLang}`;
+    if (!localStorage.getItem(seenKey)) {
+      setLangPopupTarget(newLang);
+    } else {
+      doSetLang(newLang);
+    }
+  }
+
+  function handleLangPopupConfirm() {
+    localStorage.setItem(`wq_lsp_seen_${langPopupTarget}`, "1");
+    doSetLang(langPopupTarget);
+    setLangPopupTarget(null);
+  }
+
+  function handleLangPopupClose() {
+    setLangPopupTarget(null);
   }
   const [googleUser, setGoogleUser] = useState(null);
   const [showUsernamePrompt, setShowUsernamePrompt] = useState(false);
@@ -70,6 +92,16 @@ export default function App() {
     }
     document.addEventListener('pointerdown', tryStart, { once: true });
     return () => document.removeEventListener('pointerdown', tryStart);
+  }, []);
+
+  // Pause music when app goes to background, resume when it returns
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.hidden) pauseMusic();
+      else resumeMusic();
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   function handleMusicToggle() {
@@ -250,7 +282,7 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" data-lang={lang}>
       {error && <div className="error-banner" role="alert">{error}</div>}
 
       <div className={exiting ? "page-exit" : "page-enter"}>
@@ -300,6 +332,14 @@ export default function App() {
 
       {showUsernamePrompt && (
         <UsernamePrompt onSave={handleSaveUsername} onSkip={handleSkipUsername} t={t} />
+      )}
+
+      {langPopupTarget && (
+        <LangSwitchPopup
+          targetLang={langPopupTarget}
+          onConfirm={handleLangPopupConfirm}
+          onClose={handleLangPopupClose}
+        />
       )}
 
       {/* Floating music toggle — always visible */}

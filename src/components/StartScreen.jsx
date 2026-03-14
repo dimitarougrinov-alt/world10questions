@@ -17,6 +17,19 @@ const SHAPES = [
   { emoji: "⚡", style: { top: "92%", left: "55%", animationDelay: "1.8s",  animationDuration: "5.5s",fontSize: "1.5rem" } },
 ];
 
+const SHAPES_BG = [
+  { emoji: "🌹", style: { top: "8%",  left: "7%",  animationDelay: "0s",    animationDuration: "6s",  fontSize: "2rem"   } },
+  { emoji: "🌻", style: { top: "15%", left: "88%", animationDelay: "1.5s",  animationDuration: "7s",  fontSize: "1.6rem" } },
+  { emoji: "🦁", style: { top: "72%", left: "5%",  animationDelay: "0.8s",  animationDuration: "5s",  fontSize: "1.4rem" } },
+  { emoji: "🏔️", style: { top: "60%", left: "91%", animationDelay: "2.2s",  animationDuration: "8s",  fontSize: "1.8rem" } },
+  { emoji: "🌿", style: { top: "82%", left: "75%", animationDelay: "0.3s",  animationDuration: "6.5s",fontSize: "1.5rem" } },
+  { emoji: "🍇", style: { top: "25%", left: "3%",  animationDelay: "1.1s",  animationDuration: "9s",  fontSize: "1.7rem" } },
+  { emoji: "⚔️", style: { top: "88%", left: "20%", animationDelay: "2.7s",  animationDuration: "7.5s",fontSize: "1.3rem" } },
+  { emoji: "🌾", style: { top: "5%",  left: "50%", animationDelay: "0.5s",  animationDuration: "10s", fontSize: "1.6rem" } },
+  { emoji: "🇧🇬", style: { top: "45%", left: "95%", animationDelay: "3.1s",  animationDuration: "6s",  fontSize: "1.4rem" } },
+  { emoji: "🏛️", style: { top: "92%", left: "55%", animationDelay: "1.8s",  animationDuration: "5.5s",fontSize: "1.5rem" } },
+];
+
 const DIFFICULTIES = [
   {
     key: "explorer",
@@ -43,6 +56,7 @@ const DIFFICULTIES = [
 
 export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t, lang, onSetLang }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const shapes = lang === "bg" ? SHAPES_BG : SHAPES;
   const levelInfo = getLevelInfo(totalXp);
   const earnedBadges        = getEarnedBadges()
     .map(id => BADGE_DEFS.find(b => b.id === id))
@@ -67,7 +81,7 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t,
 
       {/* Floating background shapes */}
       <div className="floating-bg">
-        {SHAPES.map((s, i) => (
+        {shapes.map((s, i) => (
           <span key={i} className="float-shape" style={s.style}>
             {s.emoji}
           </span>
@@ -93,8 +107,8 @@ export default function StartScreen({ onStart, onStats, loading, totalXp = 0, t,
         {/* Language toggle — sliding pill */}
         <div className="hero-lang-toggle" data-lang={lang}>
           <div className="hero-lang-glider" />
-          <button className="hero-lang-btn" onClick={() => onSetLang("en")}>EN</button>
-          <button className="hero-lang-btn" onClick={() => onSetLang("bg")}>БГ</button>
+          <button className="hero-lang-btn" onClick={() => onSetLang("bg")}>България</button>
+          <button className="hero-lang-btn" onClick={() => onSetLang("en")}>International</button>
         </div>
 
         {/* Player identity card */}

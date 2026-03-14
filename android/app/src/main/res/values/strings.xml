@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">World 10 Questions</string>
+    <string name="title_activity_main">World 10 Questions</string>
+    <string name="package_name">com.world10questions.app</string>
+    <string name="custom_url_scheme">com.world10questions.app</string>
+</resources>

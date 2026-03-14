@@ -680,15 +680,15 @@ body {
 .qz-card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(12, 18, 28, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 2rem;
   padding: 1.75rem 1.75rem 2rem;
   width: 100%;
   max-width: 520px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.12);
   animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -795,8 +795,8 @@ body {
   gap: 0.85rem;
   width: 100%;
   padding: 0.85rem 1rem;
-  background: rgba(255,255,255,0.08);
-  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.10);
+  border: 1.5px solid rgba(255,255,255,0.22);
   border-radius: 1.1rem;
   cursor: pointer;
   font-family: "Nunito", sans-serif;
@@ -929,10 +929,10 @@ body {
 .res-card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(12, 18, 28, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 2.5rem;
   padding: 2.25rem 1.75rem 2rem;
   width: 100%;
@@ -1094,8 +1094,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 1.1rem;
   padding: 0.7rem 1.1rem;
   text-align: left;
@@ -1127,7 +1127,7 @@ body {
 
 .res-stat-card-lbl {
   font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
@@ -1144,8 +1144,8 @@ body {
 /* ── XP / Level panel ── */
 .res-xp-panel {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 1.4rem;
   padding: 1rem 1.1rem;
   margin-bottom: 1.25rem;
@@ -1282,7 +1282,7 @@ body {
 
 .res-xp-sub-label {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.32);
+  color: rgba(255, 255, 255, 0.55);
   font-weight: 700;
   white-space: nowrap;
   min-width: 3.5rem;
@@ -1378,13 +1378,13 @@ body {
 .res-btn-ghost {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.11);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   padding: 0.7rem 0.75rem;
   font-family: "Fredoka One", cursive;
   font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
   white-space: nowrap;
@@ -1415,10 +1415,10 @@ body {
 .sf-card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1.5px solid rgba(255, 255, 255, 0.11);
+  background: rgba(12, 18, 28, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 2rem;
   padding: 1.75rem 1.5rem;
   width: 100%;
@@ -1698,8 +1698,8 @@ body {
 }
 
 .sf-stat-box {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 1rem;
   padding: 0.8rem 0.75rem;
   display: flex;
@@ -1718,7 +1718,7 @@ body {
 .sf-stat-lbl {
   font-size: 0.68rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.38);
+  color: rgba(255, 255, 255, 0.58);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -1853,17 +1853,17 @@ body {
   grid-template-columns: 2rem auto 1fr auto auto;
   align-items: center;
   gap: 0.55rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 0.95rem;
   padding: 0.6rem 0.9rem;
   transition: background 0.2s;
 }
 
 /* Top 3 rank glow */
-.sf-lb-rank-1 { border-color: rgba(255, 215, 0, 0.28);   background: rgba(255, 215, 0, 0.06); }
-.sf-lb-rank-2 { border-color: rgba(192, 192, 192, 0.22); background: rgba(192, 192, 192, 0.04); }
-.sf-lb-rank-3 { border-color: rgba(205, 127, 50, 0.22);  background: rgba(205, 127, 50, 0.04); }
+.sf-lb-rank-1 { border-color: rgba(255, 215, 0, 0.45);   background: rgba(255, 215, 0, 0.12); }
+.sf-lb-rank-2 { border-color: rgba(192, 192, 192, 0.38); background: rgba(192, 192, 192, 0.10); }
+.sf-lb-rank-3 { border-color: rgba(205, 127, 50, 0.38);  background: rgba(205, 127, 50, 0.10); }
 
 .sf-lb-you {
   background: rgba(255, 217, 61, 0.1) !important;
@@ -2226,9 +2226,9 @@ body {
 .hero-card {
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(12, 18, 28, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1.5px solid rgba(255, 255, 255, 0.18);
   border-radius: 2.5rem;
   padding: 2.5rem 2rem 2rem;
@@ -3672,30 +3672,33 @@ body {
   pointer-events: none;
 }
 
-[data-lang="bg"] .hero-lang-glider {
+[data-lang="en"] .hero-lang-glider {
   transform: translateX(100%);
 }
 
 .hero-lang-btn {
   position: relative;
   z-index: 1;
-  padding: 0.3rem 1.1rem;
+  padding: 0.3rem 0.85rem;
   border-radius: 2rem;
   border: none;
   background: transparent;
   color: rgba(255, 255, 255, 0.45);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-family: "Fredoka One", cursive;
   letter-spacing: 0.03em;
   cursor: pointer;
   transition: color 0.25s;
   white-space: nowrap;
-  min-width: 4.5rem;
+  min-width: 0;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-[data-lang="en"] .hero-lang-btn:first-of-type,
-[data-lang="bg"] .hero-lang-btn:last-of-type {
+[data-lang="bg"] .hero-lang-btn:first-of-type,
+[data-lang="en"] .hero-lang-btn:last-of-type {
   color: #1a1a2e;
   font-weight: 900;
 }
@@ -3704,8 +3707,8 @@ body {
   color: rgba(255, 255, 255, 0.75);
 }
 
-[data-lang="en"] .hero-lang-btn:first-of-type:hover,
-[data-lang="bg"] .hero-lang-btn:last-of-type:hover {
+[data-lang="bg"] .hero-lang-btn:first-of-type:hover,
+[data-lang="en"] .hero-lang-btn:last-of-type:hover {
   color: #1a1a2e;
 }
 
@@ -3859,4 +3862,450 @@ body {
 }
 .music-mute-btn:active {
   transform: scale(0.92);
+}
+
+/* ============================================================
+   BULGARIAN THEME  —  Триколор: бяло · зелено · червено
+   Applied when .app[data-lang="bg"]
+   Card: crisp white lifted off the flag. Green = primary accent.
+   ============================================================ */
+
+/* ── Global colour variables — green-led, not red ── */
+.app[data-lang="bg"] {
+  --color-primary:   #00966e;
+  --color-primary-d: #007055;
+  --color-accent:    #00966e;
+  --color-accent-d:  #007055;
+  --color-correct:   #00966e;
+  --shadow:          0 8px 32px rgba(0, 150, 110, 0.18);
+}
+
+/* ── Body background — Bulgarian tricolor (white / green / red horizontal) ── */
+.app[data-lang="bg"] ~ * {}
+.app[data-lang="bg"] .start-screen-redesign {
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 30%, rgba(0,0,0,0.38) 100%),
+    linear-gradient(
+      to bottom,
+      #e8e8e8 0%,    #e8e8e8 33.3%,
+      #007a58 33.3%, #007a58 66.6%,
+      #b01e0e 66.6%, #b01e0e 100%
+    );
+}
+
+/* ── Stars/overlay — hidden for flag screens ── */
+.app[data-lang="bg"] .start-screen-redesign::before,
+.app[data-lang="bg"] .qz-screen::before,
+.app[data-lang="bg"] .res-screen::before,
+.app[data-lang="bg"] .sf-screen::before {
+  display: none;
+}
+
+/* ── Hero card — dark opaque (matches quiz/result/hof) ── */
+.app[data-lang="bg"] .hero-card {
+  background: rgba(12, 18, 28, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  max-width: 440px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ── Globe pulse rings — green + red ── */
+.app[data-lang="bg"] .globe-pulse-ring {
+  border-color: rgba(0, 150, 110, 0.55);
+}
+.app[data-lang="bg"] .ring2 {
+  border-color: rgba(214, 38, 18, 0.45);
+}
+
+/* ── "10" title — green-to-red on white ── */
+.app[data-lang="bg"] .hero-title-10 {
+  background: linear-gradient(155deg, #00966e 0%, #d62612 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 150, 110, 0.25));
+}
+
+/* ── "WORLD" and "QUESTIONS" labels — white on dark card ── */
+.app[data-lang="bg"] .hero-title-world,
+.app[data-lang="bg"] .hero-title-questions {
+  letter-spacing: 0.32em;
+}
+
+/* ── Lang toggle — green active glider ── */
+.app[data-lang="bg"] .hero-lang-glider {
+  background: linear-gradient(135deg, #00966e 0%, #007055 100%);
+  box-shadow: 0 2px 12px rgba(0, 150, 110, 0.4);
+}
+
+/* ── Category buttons — white cards with bold color left-bar ── */
+.app[data-lang="bg"] .cat-capitals,
+.app[data-lang="bg"] .cat-inventions,
+.app[data-lang="bg"] .cat-history,
+.app[data-lang="bg"] .cat-people {
+  background: #f7f7f5;
+  box-shadow: 0 5px 0 rgba(0,0,0,0.09), 0 10px 22px rgba(0,0,0,0.09);
+  border: 1.5px solid rgba(0,0,0,0.07);
+}
+.app[data-lang="bg"] .cat-capitals   { border-left: 5px solid #00966e; }
+.app[data-lang="bg"] .cat-inventions { border-left: 5px solid #d62612; }
+.app[data-lang="bg"] .cat-history    { border-left: 5px solid #00966e; }
+.app[data-lang="bg"] .cat-people     { border-left: 5px solid #d62612; }
+
+.app[data-lang="bg"] .cat-capitals:hover:not(:disabled),
+.app[data-lang="bg"] .cat-inventions:hover:not(:disabled),
+.app[data-lang="bg"] .cat-history:hover:not(:disabled),
+.app[data-lang="bg"] .cat-people:hover:not(:disabled) {
+  background: #eef5f2;
+}
+
+/* ── Category button text — dark on white ── */
+.app[data-lang="bg"] .cat-btn-label {
+  color: #1a1a1a;
+}
+.app[data-lang="bg"] .cat-btn-sub {
+  color: #666666;
+}
+.app[data-lang="bg"] .cat-btn-icon {
+  filter: none;
+}
+
+/* ── Difficulty buttons — light tinted panels ── */
+.app[data-lang="bg"] .diff-explorer {
+  background: rgba(0, 150, 110, 0.05);
+  border-color: rgba(0, 150, 110, 0.35);
+}
+.app[data-lang="bg"] .diff-challenger {
+  background: rgba(214, 38, 18, 0.04);
+  border-color: rgba(214, 38, 18, 0.3);
+}
+.app[data-lang="bg"] .diff-master {
+  background: rgba(100, 10, 5, 0.05);
+  border-color: rgba(100, 10, 5, 0.28);
+}
+.app[data-lang="bg"] .diff-explorer::before  { background: radial-gradient(circle at 50% 0%, rgba(0,150,110,0.12), transparent 70%); }
+.app[data-lang="bg"] .diff-challenger::before { background: radial-gradient(circle at 50% 0%, rgba(214,38,18,0.1), transparent 70%); }
+.app[data-lang="bg"] .diff-master::before    { background: radial-gradient(circle at 50% 0%, rgba(100,10,5,0.13), transparent 70%); }
+
+/* ── Difficulty button text ── */
+.app[data-lang="bg"] .diff-explorer  .diff-btn-label,
+.app[data-lang="bg"] .diff-challenger .diff-btn-label,
+.app[data-lang="bg"] .diff-master     .diff-btn-label {
+  color: #1a1a1a;
+}
+.app[data-lang="bg"] .diff-explorer  .diff-btn-desc,
+.app[data-lang="bg"] .diff-challenger .diff-btn-desc,
+.app[data-lang="bg"] .diff-master     .diff-btn-desc {
+  color: #5a5a5a;
+}
+
+/* ── Hall of fame button — green accent on dark card ── */
+.app[data-lang="bg"] .hero-hof-btn {
+  border-color: rgba(0, 150, 110, 0.4);
+  color: #4ade80;
+}
+.app[data-lang="bg"] .hero-hof-btn:hover {
+  background: rgba(0, 150, 110, 0.15);
+  border-color: rgba(0, 150, 110, 0.7);
+  color: #86efac;
+  transform: translateY(-2px);
+}
+
+/* ── Identity card text — inherits white from base on dark card ── */
+
+/* ── Badges — solid white backing for crisp contrast ── */
+.app[data-lang="bg"] .hero-badge-pip {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
+  filter: none;
+  font-size: 1.5rem;
+}
+.app[data-lang="bg"] .hero-badge-pip:hover {
+  background: #ffffff;
+  filter: drop-shadow(0 0 6px rgba(0, 150, 110, 0.35));
+}
+
+/* ── Progress bar in quiz ── */
+.app[data-lang="bg"] .qz-progress-fill {
+  background: linear-gradient(90deg, #00966e 0%, #d62612 100%);
+}
+
+/* ── Quiz / Result / Summary screens — Bulgarian tricolor background ── */
+.app[data-lang="bg"] .qz-screen,
+.app[data-lang="bg"] .res-screen,
+.app[data-lang="bg"] .sf-screen {
+  background:
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 30%, rgba(0,0,0,0.38) 100%),
+    linear-gradient(
+      to bottom,
+      #e8e8e8 0%,    #e8e8e8 33.3%,
+      #007a58 33.3%, #007a58 66.6%,
+      #b01e0e 66.6%, #b01e0e 100%
+    );
+}
+
+/* ── Result screen correct score colour ── */
+.app[data-lang="bg"] .result-score-value {
+  color: #00966e;
+}
+
+/* ── Back button — green instead of red ── */
+.app[data-lang="bg"] .hero-back-btn {
+  border-color: rgba(0, 150, 110, 0.3);
+  color: #007055;
+}
+.app[data-lang="bg"] .hero-back-btn:hover {
+  background: rgba(0, 150, 110, 0.08);
+  border-color: rgba(0, 150, 110, 0.55);
+  color: #00966e;
+}
+
+/* ── Floating shapes — natural, no filter ── */
+.app[data-lang="bg"] .float-shape {
+  filter: none;
+}
+
+/* ============================================================
+   LANG SWITCH POPUP
+   ============================================================ */
+
+.lsp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lsp-overlay-bg {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lsp-overlay-en {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lsp-overlay.lsp-visible {
+  opacity: 1;
+}
+
+/* ── Shared card base ── */
+.lsp-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 2rem;
+  overflow: hidden;
+  transform: scale(0.78) translateY(28px);
+  opacity: 0;
+  transition:
+    transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity   0.3s ease;
+}
+
+.lsp-card.lsp-card-visible {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ── Flag stripe (BG only) ── */
+.lsp-flag-stripe {
+  width: 100%;
+  height: 18px;
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,    #ffffff 33.33%,
+    #00966e 33.33%, #00966e 66.66%,
+    #d62612 66.66%, #d62612 100%
+  );
+  flex-shrink: 0;
+}
+
+/* ── Inner content padding ── */
+.lsp-inner {
+  padding: 1.75rem 2rem 1.75rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Icon ── */
+.lsp-icon {
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: 0.9rem;
+  display: block;
+  animation: lspIconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes lspIconPop {
+  from { transform: scale(0.25) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1)    rotate(0deg);  opacity: 1; }
+}
+
+/* ── Title shared ── */
+.lsp-title {
+  margin: 0 0 0.7rem;
+  line-height: 1.2;
+}
+
+/* ── Body shared ── */
+.lsp-body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Confirm button shared ── */
+.lsp-confirm {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border: none;
+  border-radius: 1rem;
+  font-family: "Fredoka One", cursive;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  margin-bottom: 0.55rem;
+  letter-spacing: 0.02em;
+}
+
+.lsp-confirm:hover  { transform: translateY(-2px); }
+.lsp-confirm:active { transform: translateY(2px);  }
+
+/* ── Skip/cancel button shared ── */
+.lsp-skip {
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.3rem 0.5rem;
+  width: 100%;
+}
+
+/* ════════════════════
+   BULGARIAN CARD
+   ════════════════════ */
+.lsp-card-bg {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.28),
+    0 0 0 3px rgba(0, 150, 110, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.lsp-title-bg {
+  font-family: "Fredoka One", cursive;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.lsp-card-bg .lsp-body {
+  color: #444444;
+}
+
+.lsp-confirm-bg {
+  background: linear-gradient(135deg, #00966e 0%, #007055 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 0 #005840, 0 10px 24px rgba(0, 150, 110, 0.38);
+}
+
+.lsp-confirm-bg:hover {
+  box-shadow: 0 8px 0 #005840, 0 14px 28px rgba(0, 150, 110, 0.5);
+}
+
+.lsp-confirm-bg:active {
+  box-shadow: 0 3px 0 #005840, 0 6px 16px rgba(0, 150, 110, 0.3);
+}
+
+.lsp-card-bg .lsp-skip {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.lsp-card-bg .lsp-skip:hover {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* ════════════════════
+   INTERNATIONAL CARD
+   ════════════════════ */
+.lsp-card-en {
+  background: linear-gradient(155deg, #0d1b52 0%, #1a0a3e 55%, #0a1628 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 200, 80, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Star field */
+.lsp-card-en::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8%  12%, rgba(255,220,100,0.9) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 82%  6%, rgba(255,200, 80,0.8) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 52% 22%, rgba(255,180, 60,0.6) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 28% 38%, rgba(255,220,120,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 91% 44%, rgba(255,200, 80,0.7) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 14% 68%, rgba(255,160, 60,0.6) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 73% 78%, rgba(255,220,100,0.4) 0%, transparent 100%),
+    radial-gradient(1px   1px   at 42% 90%, rgba(255,180, 80,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 55%, rgba(255,200,120,0.3) 0%, transparent 100%);
+}
+
+.lsp-title-en {
+  font-family: "Fredoka One", cursive;
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, #FFD93D 0%, #FF914D 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lsp-body-en {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.lsp-confirm-en {
+  background: linear-gradient(135deg, #FFD93D 0%, #FF914D 100%);
+  color: #1a0800;
+  font-weight: 900;
+  box-shadow: 0 6px 0 #b85e00, 0 10px 24px rgba(255, 145, 77, 0.4);
+}
+
+.lsp-confirm-en:hover {
+  box-shadow: 0 8px 0 #b85e00, 0 14px 28px rgba(255, 145, 77, 0.55);
+}
+
+.lsp-confirm-en:active {
+  box-shadow: 0 3px 0 #b85e00, 0 6px 16px rgba(255, 145, 77, 0.3);
+}
+
+.lsp-skip-en {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.lsp-skip-en:hover {
+  color: rgba(255, 255, 255, 0.55);
 }

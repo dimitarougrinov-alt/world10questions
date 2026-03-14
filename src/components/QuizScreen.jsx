@@ -5,7 +5,7 @@ import { soundCorrect, soundWrong, soundComplete } from "../utils/sounds";
 const FEEDBACK_DELAY = 2000;
 const LETTERS = ["A", "B", "C", "D"];
 const LETTER_COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#C77DFF"];
-const TIMEOUT_MS = 180_000; // 3 minutes
+const TIMEOUT_MS = 600_000; // 10 minutes
 
 function formatTime(ms) {
   const s = ms / 1000;

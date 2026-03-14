@@ -4,7 +4,7 @@ import bg from "./bg";
 const LANG_KEY = "wq_lang";
 
 export function getLang() {
-  return localStorage.getItem(LANG_KEY) || "en";
+  return localStorage.getItem(LANG_KEY) || "bg";
 }
 
 export function setLang(lang) {

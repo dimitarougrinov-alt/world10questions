@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bgGrad" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1a3a7c"/>
+      <stop offset="100%" stop-color="#060d1f"/>
+    </radialGradient>
+    <radialGradient id="oceanGrad" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#42a5f5"/>
+      <stop offset="60%" stop-color="#1565c0"/>
+      <stop offset="100%" stop-color="#0d47a1"/>
+    </radialGradient>
+    <radialGradient id="atmosGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="72%" stop-color="#42a5f5" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#90caf9" stop-opacity="0.45"/>
+    </radialGradient>
+    <radialGradient id="specGrad" cx="32%" cy="26%" r="42%">
+      <stop offset="0%" stop-color="white" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="globeClip">
+      <circle cx="256" cy="188" r="142"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bgGrad)"/>
+
+  <!-- Stars -->
+  <circle cx="48"  cy="48"  r="2"   fill="white" opacity="0.85"/>
+  <circle cx="452" cy="68"  r="2.5" fill="white" opacity="0.75"/>
+  <circle cx="398" cy="28"  r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="78"  cy="385" r="2"   fill="white" opacity="0.6"/>
+  <circle cx="462" cy="355" r="2"   fill="white" opacity="0.7"/>
+  <circle cx="28"  cy="205" r="1.5" fill="white" opacity="0.55"/>
+  <circle cx="492" cy="195" r="2"   fill="white" opacity="0.65"/>
+  <circle cx="105" cy="462" r="1.5" fill="white" opacity="0.45"/>
+  <circle cx="422" cy="445" r="2"   fill="white" opacity="0.55"/>
+  <circle cx="198" cy="38"  r="1.5" fill="white" opacity="0.65"/>
+  <circle cx="352" cy="478" r="1.5" fill="white" opacity="0.45"/>
+  <circle cx="148" cy="22"  r="1"   fill="white" opacity="0.7"/>
+  <circle cx="488" cy="120" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="18"  cy="320" r="1"   fill="white" opacity="0.6"/>
+
+  <!-- Earth — ocean base -->
+  <circle cx="256" cy="188" r="142" fill="url(#oceanGrad)"/>
+
+  <!-- Earth — continents -->
+  <g clip-path="url(#globeClip)">
+    <!-- North America -->
+    <ellipse cx="175" cy="155" rx="48" ry="58" transform="rotate(-20 175 155)" fill="#2e7d32" opacity="0.92"/>
+    <!-- Central America bridge -->
+    <ellipse cx="192" cy="210" rx="13" ry="18" transform="rotate(15 192 210)" fill="#33691e" opacity="0.92"/>
+    <!-- South America -->
+    <ellipse cx="205" cy="258" rx="30" ry="54" transform="rotate(10 205 258)" fill="#388e3c" opacity="0.92"/>
+    <!-- Europe -->
+    <ellipse cx="268" cy="138" rx="27" ry="22" transform="rotate(-5 268 138)" fill="#558b2f" opacity="0.92"/>
+    <!-- Africa -->
+    <ellipse cx="276" cy="212" rx="32" ry="54" transform="rotate(4 276 212)" fill="#33691e" opacity="0.92"/>
+    <!-- Asia -->
+    <ellipse cx="362" cy="140" rx="72" ry="48" transform="rotate(-10 362 140)" fill="#388e3c" opacity="0.92"/>
+    <!-- Southeast Asia -->
+    <ellipse cx="372" cy="208" rx="27" ry="19" transform="rotate(15 372 208)" fill="#2e7d32" opacity="0.92"/>
+    <!-- Australia -->
+    <ellipse cx="392" cy="255" rx="34" ry="24" transform="rotate(-5 392 255)" fill="#558b2f" opacity="0.92"/>
+    <!-- Greenland -->
+    <ellipse cx="212" cy="90"  rx="21" ry="28" transform="rotate(-15 212 90)" fill="#81c784" opacity="0.75"/>
+  </g>
+
+  <!-- Atmosphere glow ring -->
+  <circle cx="256" cy="188" r="142" fill="url(#atmosGrad)"/>
+  <circle cx="256" cy="188" r="142" fill="none" stroke="#90caf9" stroke-width="3" opacity="0.5"/>
+
+  <!-- Specular highlight -->
+  <circle cx="256" cy="188" r="142" fill="url(#specGrad)"/>
+
+  <!-- Orbit arc (dashed ellipse) -->
+  <ellipse cx="256" cy="188" rx="185" ry="42"
+    fill="none" stroke="white" stroke-width="2.5" opacity="0.28"
+    stroke-dasharray="14,9"/>
+
+  <!-- "10" bold text -->
+  <text x="256" y="436"
+    font-family="Arial Black, Impact, sans-serif"
+    font-size="175"
+    font-weight="900"
+    text-anchor="middle"
+    fill="white"
+    letter-spacing="-10">10</text>
+
+  <!-- Subtle text shadow / depth -->
+  <text x="259" y="439"
+    font-family="Arial Black, Impact, sans-serif"
+    font-size="175"
+    font-weight="900"
+    text-anchor="middle"
+    fill="#1565c0"
+    opacity="0.35"
+    letter-spacing="-10">10</text>
+  <text x="256" y="436"
+    font-family="Arial Black, Impact, sans-serif"
+    font-size="175"
+    font-weight="900"
+    text-anchor="middle"
+    fill="white"
+    letter-spacing="-10">10</text>
+</svg>

@@ -1,24 +1,29 @@
 // ─── music.js – background music player ───────────────────────────────────
-// Loads the MP3 into the SAME AudioContext used by sounds.js so that both
-// streams are mixed by the browser's audio graph natively.
+// Plays a sequential playlist of tracks. When one ends, the next begins.
 // Ducking: whenever a sound effect fires, music gain dips quickly then rises.
 
 import { ac, registerDuck } from './sounds';
 
-const MUSIC_URL  = '/music/12-danny_byrd-sweet_harmony_(feat_liquid).mp3';
-const GAIN_FULL  = 0.28;    // comfortable background level
-const GAIN_DUCK  = 0.05;    // quieted while SFX plays
-const RAMP_DUCK  = 0.07;    // seconds to duck down
-const RAMP_RISE  = 1.20;    // seconds to rise back up
-const UNDUCK_MS  = 500;     // ms after last SFX before unducking
+const PLAYLIST = [
+  '/music/12-danny_byrd-sweet_harmony_(feat_liquid).mp3',
+  '/music/Apex - String Theory.mp3',
+  '/music/Bachelors Of Science - The Ice Dance.mp3',
+];
 
-let musicGain   = null;     // GainNode – persists for mute control
-let musicSource = null;     // BufferSourceNode – replaced on restart
-let audioBuffer = null;     // decoded PCM
-let rawBuffer   = null;     // pre-fetched ArrayBuffer (before decode)
-let unduckTimer = null;
-let isPlaying   = false;
-let isMuted     = false;
+const GAIN_FULL  = 0.28;
+const GAIN_DUCK  = 0.05;
+const RAMP_DUCK  = 0.07;
+const RAMP_RISE  = 1.20;
+const UNDUCK_MS  = 500;
+
+let musicGain    = null;
+let musicSource  = null;
+let audioBuffers = new Array(PLAYLIST.length).fill(null);
+let rawBuffers   = new Array(PLAYLIST.length).fill(null);
+let currentTrack = 0;
+let unduckTimer  = null;
+let isPlaying    = false;
+let isMuted      = false;
 
 // ─── Duck + unduck ────────────────────────────────────────────────────────
 function unduck() {
@@ -41,32 +46,30 @@ function duck() {
   unduckTimer = setTimeout(unduck, UNDUCK_MS);
 }
 
-// Register with sounds.js immediately — no AudioContext required yet
 registerDuck(duck);
 
 // ─── Buffer management ────────────────────────────────────────────────────
-// Prefetch raw bytes without needing AudioContext (call on app mount).
 export function preloadMusic() {
-  if (rawBuffer || audioBuffer) return;
-  fetch(MUSIC_URL)
+  if (rawBuffers[0] || audioBuffers[0]) return;
+  fetch(PLAYLIST[0])
     .then(r => r.arrayBuffer())
-    .then(ab => { rawBuffer = ab; })
+    .then(ab => { rawBuffers[0] = ab; })
     .catch(() => {});
 }
 
-async function ensureBuffer() {
-  if (audioBuffer) return true;
+async function ensureBuffer(index) {
+  if (audioBuffers[index]) return true;
   const c = ac();
   try {
     let ab;
-    if (rawBuffer) {
-      ab       = rawBuffer;
-      rawBuffer = null;           // decodeAudioData may detach the buffer
+    if (rawBuffers[index]) {
+      ab = rawBuffers[index];
+      rawBuffers[index] = null;
     } else {
-      const res = await fetch(MUSIC_URL);
-      ab        = await res.arrayBuffer();
+      const res = await fetch(PLAYLIST[index]);
+      ab = await res.arrayBuffer();
     }
-    audioBuffer = await c.decodeAudioData(ab);
+    audioBuffers[index] = await c.decodeAudioData(ab);
     return true;
   } catch (e) {
     console.warn('[music] load error:', e);
@@ -75,11 +78,9 @@ async function ensureBuffer() {
 }
 
 // ─── Playback control ─────────────────────────────────────────────────────
-export async function startMusic() {
-  if (isPlaying) return;
-  const ok = await ensureBuffer();
-  if (!ok) return;
-  if (isPlaying) return;          // double-check after async gap
+async function playTrack(index) {
+  const ok = await ensureBuffer(index);
+  if (!ok || !isPlaying) return;
 
   const c = ac();
 
@@ -90,11 +91,37 @@ export async function startMusic() {
   }
 
   musicSource        = c.createBufferSource();
-  musicSource.buffer = audioBuffer;
-  musicSource.loop   = true;
+  musicSource.buffer = audioBuffers[index];
+  musicSource.loop   = false;
   musicSource.connect(musicGain);
+  musicSource.onended = () => {
+    if (!isPlaying) return;
+    const next = (index + 1) % PLAYLIST.length;
+    currentTrack = next;
+    playTrack(next);
+  };
   musicSource.start(0);
+
+  // Preload the next track in the background
+  const nextIndex = (index + 1) % PLAYLIST.length;
+  ensureBuffer(nextIndex).catch(() => {});
+}
+
+export async function startMusic() {
+  if (isPlaying) return;
   isPlaying = true;
+  await playTrack(currentTrack);
+}
+
+export function pauseMusic() {
+  const c = ac();
+  if (c.state === 'running') c.suspend();
+}
+
+export function resumeMusic() {
+  if (!isPlaying || isMuted) return;
+  const c = ac();
+  if (c.state === 'suspended') c.resume();
 }
 
 export function setMuted(muted) {
