@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { soundBadge } from "../utils/sounds";
 
 // Static confetti — varied rainbow palette to celebrate achievements
 const CONFETTI = Array.from({ length: 32 }, (_, i) => {
@@ -20,6 +21,7 @@ export default function BadgePopup({ badges, onClose }) {
   const multi = badges.length > 1;
 
   useEffect(() => {
+    soundBadge();
     const t = setTimeout(() => dismiss(), 6000);
     return () => clearTimeout(t);
   }, []);

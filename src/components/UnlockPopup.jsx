@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { soundUnlock } from "../utils/sounds";
 
 const DIFF_CONFIG = {
   challenger: {
@@ -42,6 +43,7 @@ export default function UnlockPopup({ difficulty, onClose }) {
   const cfg = DIFF_CONFIG[difficulty];
 
   useEffect(() => {
+    soundUnlock();
     const t = setTimeout(() => dismiss(), 5500);
     return () => clearTimeout(t);
   }, []);

@@ -8,7 +8,8 @@ import { getPlayerId, getPlayerCountry, USERNAME_KEY } from "./utils/player";
 import { getLang, setLang, getT } from "./i18n/index";
 import { saveSession, getTimePercentile, saveUsername, migratePlayer, savePlayerProgress } from "./firebase/stats";
 import { onAuthChange, signInWithGoogle, signOutUser } from "./firebase/auth";
-import { soundTransition } from "./utils/sounds";
+import { soundTransition, soundPerfect, soundLevelUp } from "./utils/sounds";
+import { preloadMusic, startMusic, setMuted } from "./utils/music";
 import { processGameRewards, getTotalXp, getLevelInfo, getEarnedBadges, getStreak, recordCategoryResult, isChallengerUnlockedForCat, isMasterUnlockedForCat } from "./utils/xp";
 
 import StartScreen from "./components/StartScreen";
@@ -56,6 +57,26 @@ export default function App() {
   const [rewards, setRewards] = useState(null); // { xpEarned, totalXp, newLevel, leveledUp, streak, newBadges }
   const [unlockedDifficulty, setUnlockedDifficulty] = useState(null);
   const [statsInitialView, setStatsInitialView] = useState("stats");
+  const [musicMuted, setMusicMuted] = useState(false);
+  const musicStartedRef = useRef(false);
+
+  // Background music — prefetch bytes on mount, start on first interaction
+  useEffect(() => {
+    preloadMusic();
+    function tryStart() {
+      if (musicStartedRef.current) return;
+      musicStartedRef.current = true;
+      startMusic().catch(() => {});
+    }
+    document.addEventListener('pointerdown', tryStart, { once: true });
+    return () => document.removeEventListener('pointerdown', tryStart);
+  }, []);
+
+  function handleMusicToggle() {
+    const next = !musicMuted;
+    setMusicMuted(next);
+    setMuted(next);
+  }
 
   // Detect challenge links on load
   useEffect(() => {
@@ -137,6 +158,14 @@ export default function App() {
     const wasChallLocked = !isChallengerUnlockedForCat(category);
     const wasMasterLocked = !isMasterUnlockedForCat(category);
     recordCategoryResult(category, difficulty, pct);
+
+    // Post-result celebration sounds (scheduled after screen transition settles)
+    if (score === questions.length) {
+      setTimeout(soundPerfect, 550);   // 10/10 sparkle fanfare
+    } else if (r.leveledUp) {
+      setTimeout(soundLevelUp, 650);   // rising scale on level-up
+    }
+
     const justUnlocked =
       (wasChallLocked && isChallengerUnlockedForCat(category)) ? "challenger" :
       (wasMasterLocked && isMasterUnlockedForCat(category))    ? "master"     : null;
@@ -272,6 +301,16 @@ export default function App() {
       {showUsernamePrompt && (
         <UsernamePrompt onSave={handleSaveUsername} onSkip={handleSkipUsername} t={t} />
       )}
+
+      {/* Floating music toggle — always visible */}
+      <button
+        className="music-mute-btn"
+        onClick={handleMusicToggle}
+        title={musicMuted ? "Unmute music" : "Mute music"}
+        aria-label={musicMuted ? "Unmute music" : "Mute music"}
+      >
+        {musicMuted ? "🔇" : "🎵"}
+      </button>
     </div>
   );
 }
